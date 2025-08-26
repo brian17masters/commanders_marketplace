@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AIChat from "@/components/AIChat";
+import { AuthButtons } from "@/components/AuthButtons";
 import { useQuery } from "@tanstack/react-query";
 import { 
   Shield, 
@@ -30,7 +31,7 @@ export default function Landing() {
     queryKey: ["/api/challenges"],
   });
 
-  const featuredChallenges = challenges?.slice(0, 2) || [];
+  const featuredChallenges = Array.isArray(challenges) ? challenges.slice(0, 2) : [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -77,21 +78,7 @@ export default function Landing() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  className="bg-accent text-primary px-8 py-3 text-lg font-semibold hover:bg-yellow-500 transition-colors transform hover:scale-105"
-                  onClick={() => window.location.href = "/api/login"}
-                  data-testid="button-explore-opportunities"
-                >
-                  Explore Opportunities
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="border-accent text-accent px-8 py-3 text-lg font-semibold hover:bg-accent hover:text-primary transition-colors"
-                  onClick={() => window.location.href = "/api/login"}
-                  data-testid="button-submit-solution"
-                >
-                  Submit a Solution
-                </Button>
+                <AuthButtons variant="landing" />
               </div>
             </div>
             
@@ -109,7 +96,7 @@ export default function Landing() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-foreground" data-testid="text-active-solutions">
-                      {stats?.solutions || 1247}+ Active Solutions
+                      {(stats as any)?.solutions || 1247}+ Active Solutions
                     </p>
                     <p className="text-xs text-muted-foreground">Across 50+ Technology Areas</p>
                   </div>
@@ -126,25 +113,25 @@ export default function Landing() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center" data-testid="stat-vendors">
               <div className="text-4xl font-bold text-primary mb-2">
-                {stats?.vendors || "2,156"}
+                {(stats as any)?.vendors || "2,156"}
               </div>
               <div className="text-muted-foreground">Registered Vendors</div>
             </div>
             <div className="text-center" data-testid="stat-solutions">
               <div className="text-4xl font-bold text-primary mb-2">
-                {stats?.solutions || "1,247"}
+                {(stats as any)?.solutions || "1,247"}
               </div>
               <div className="text-muted-foreground">Active Solutions</div>
             </div>
             <div className="text-center" data-testid="stat-challenges">
               <div className="text-4xl font-bold text-primary mb-2">
-                {stats?.challenges || "47"}
+                {(stats as any)?.challenges || "47"}
               </div>
               <div className="text-muted-foreground">Open Challenges</div>
             </div>
             <div className="text-center" data-testid="stat-contracts">
               <div className="text-4xl font-bold text-primary mb-2">
-                {stats?.contracts || "$284M"}
+                {(stats as any)?.contracts || "$284M"}
               </div>
               <div className="text-muted-foreground">Contracts Awarded</div>
             </div>
@@ -236,7 +223,7 @@ export default function Landing() {
               onClick={() => window.location.href = "/api/login"}
               data-testid="button-view-all-challenges"
             >
-              View All Challenges ({challenges?.length || 47})
+              View All Challenges ({Array.isArray(challenges) ? challenges.length : 47})
             </Button>
           </div>
         </div>

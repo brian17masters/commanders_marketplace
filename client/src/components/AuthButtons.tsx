@@ -1,109 +1,475 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+
+const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+const registerSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  role: z.enum(["vendor", "government"], {
+    required_error: "Please select a role",
+  }),
+}).refine((data) => {
+  if (data.role === "government" && !data.email.toLowerCase().endsWith('.mil')) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Government users must use a .mil email address",
+  path: ["email"],
+});
+
+type LoginData = z.infer<typeof loginSchema>;
+type RegisterData = z.infer<typeof registerSchema>;
 
 interface AuthButtonsProps {
   variant?: "header" | "landing";
-  className?: string;
 }
 
-export function AuthButtons({ variant = "header", className }: AuthButtonsProps) {
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
+export function AuthButtons({ variant = "header" }: AuthButtonsProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { toast } = useToast();
+
+  const loginForm = useForm<LoginData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const registerForm = useForm<RegisterData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      firstName: "",
+      lastName: "",
+      role: undefined,
+    },
+  });
+
+  const loginMutation = useMutation({
+    mutationFn: async (data: LoginData) => {
+      const response = await apiRequest("POST", "/api/login", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      setIsOpen(false);
+      toast({
+        title: "Success",
+        description: "Logged in successfully!",
+      });
+      window.location.reload();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Login Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const registerMutation = useMutation({
+    mutationFn: async (data: RegisterData) => {
+      const response = await apiRequest("POST", "/api/register", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      setIsOpen(false);
+      toast({
+        title: "Success",
+        description: "Account created and logged in successfully!",
+      });
+      window.location.reload();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Registration Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onLoginSubmit = (data: LoginData) => {
+    loginMutation.mutate(data);
+  };
+
+  const onRegisterSubmit = (data: RegisterData) => {
+    registerMutation.mutate(data);
+  };
 
   if (variant === "header") {
     return (
-      <div className={`flex items-center space-x-4 ${className}`}>
-        <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
-          <DialogTrigger asChild>
-            <Button 
-              className="bg-accent text-primary font-medium hover:bg-yellow-500 transition-colors"
-              data-testid="button-signin"
-            >
-              Sign In
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Sign In to G-TEAD Marketplace</DialogTitle>
-              <DialogDescription>
-                Choose your preferred sign-in method to access the platform
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <Button 
-                className="w-full flex items-center gap-2 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-                onClick={() => window.location.href = "/api/login/google"}
-                data-testid="button-google-signin"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-                Continue with Google
-              </Button>
-              
-              <Button 
-                className="w-full flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700"
-                onClick={() => window.location.href = "/api/login/replit"}
-                data-testid="button-replit-signin"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M7 3.5c-2.5 0-4.5 2-4.5 4.5v8c0 2.5 2 4.5 4.5 4.5h4v-6h-4v-2h6.5c.5 0 1-.5 1-1v-3c0-2.5-2-4.5-4.5-4.5h-3z"/>
-                </svg>
-                Continue with Replit
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-        
-        <Button 
-          variant="outline"
-          className="border-accent text-accent hover:bg-accent hover:text-primary transition-colors"
-          onClick={() => setShowAuthDialog(true)}
-          data-testid="button-register"
-        >
-          Register
-        </Button>
-      </div>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button 
+            className="bg-accent text-primary font-medium hover:bg-yellow-500 transition-colors"
+            data-testid="button-auth-dialog"
+          >
+            Sign In / Register
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Welcome to G-TEAD Marketplace</DialogTitle>
+          </DialogHeader>
+          
+          <Tabs defaultValue="login" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="login">Sign In</TabsTrigger>
+              <TabsTrigger value="register">Register</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="login">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Sign In</CardTitle>
+                  <CardDescription>
+                    Enter your credentials to access your account
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="login-email">Email</Label>
+                      <Input
+                        id="login-email"
+                        type="email"
+                        placeholder="your.email@example.com"
+                        {...loginForm.register("email")}
+                        data-testid="input-login-email"
+                      />
+                      {loginForm.formState.errors.email && (
+                        <p className="text-sm text-red-500">{loginForm.formState.errors.email.message}</p>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="login-password">Password</Label>
+                      <Input
+                        id="login-password"
+                        type="password"
+                        placeholder="Your password"
+                        {...loginForm.register("password")}
+                        data-testid="input-login-password"
+                      />
+                      {loginForm.formState.errors.password && (
+                        <p className="text-sm text-red-500">{loginForm.formState.errors.password.message}</p>
+                      )}
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full"
+                      disabled={loginMutation.isPending}
+                      data-testid="button-login-submit"
+                    >
+                      {loginMutation.isPending ? "Signing In..." : "Sign In"}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="register">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Create Account</CardTitle>
+                  <CardDescription>
+                    Join G-TEAD as a Vendor or Government user
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="register-firstName">First Name</Label>
+                        <Input
+                          id="register-firstName"
+                          placeholder="John"
+                          {...registerForm.register("firstName")}
+                          data-testid="input-register-firstName"
+                        />
+                        {registerForm.formState.errors.firstName && (
+                          <p className="text-sm text-red-500">{registerForm.formState.errors.firstName.message}</p>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="register-lastName">Last Name</Label>
+                        <Input
+                          id="register-lastName"
+                          placeholder="Doe"
+                          {...registerForm.register("lastName")}
+                          data-testid="input-register-lastName"
+                        />
+                        {registerForm.formState.errors.lastName && (
+                          <p className="text-sm text-red-500">{registerForm.formState.errors.lastName.message}</p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="register-email">Email</Label>
+                      <Input
+                        id="register-email"
+                        type="email"
+                        placeholder="your.email@example.com"
+                        {...registerForm.register("email")}
+                        data-testid="input-register-email"
+                      />
+                      {registerForm.formState.errors.email && (
+                        <p className="text-sm text-red-500">{registerForm.formState.errors.email.message}</p>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="register-password">Password</Label>
+                      <Input
+                        id="register-password"
+                        type="password"
+                        placeholder="At least 8 characters"
+                        {...registerForm.register("password")}
+                        data-testid="input-register-password"
+                      />
+                      {registerForm.formState.errors.password && (
+                        <p className="text-sm text-red-500">{registerForm.formState.errors.password.message}</p>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="register-role">Role</Label>
+                      <Select 
+                        onValueChange={(value) => registerForm.setValue("role", value as "vendor" | "government")}
+                        data-testid="select-register-role"
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="vendor">Vendor / Technology Provider</SelectItem>
+                          <SelectItem value="government">Government / Military (.mil required)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {registerForm.formState.errors.role && (
+                        <p className="text-sm text-red-500">{registerForm.formState.errors.role.message}</p>
+                      )}
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full"
+                      disabled={registerMutation.isPending}
+                      data-testid="button-register-submit"
+                    >
+                      {registerMutation.isPending ? "Creating Account..." : "Create Account"}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
     );
   }
 
-  // Landing page variant
+  // Landing page variant - direct buttons
   return (
-    <div className={`space-y-4 ${className}`}>
-      <Button 
-        size="lg"
-        className="w-full flex items-center gap-3 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 text-lg py-6"
-        onClick={() => window.location.href = "/api/login/google"}
-        data-testid="button-google-signin-landing"
-      >
-        <svg className="w-6 h-6" viewBox="0 0 24 24">
-          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-        </svg>
-        Continue with Google
-      </Button>
-      
-      <Button 
-        size="lg"
-        className="w-full flex items-center gap-3 bg-blue-600 text-white hover:bg-blue-700 text-lg py-6"
-        onClick={() => window.location.href = "/api/login/replit"}
-        data-testid="button-replit-signin-landing"
-      >
-        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M7 3.5c-2.5 0-4.5 2-4.5 4.5v8c0 2.5 2 4.5 4.5 4.5h4v-6h-4v-2h6.5c.5 0 1-.5 1-1v-3c0-2.5-2-4.5-4.5-4.5h-3z"/>
-        </svg>
-        Continue with Replit
-      </Button>
-      
-      <div className="text-center text-sm text-gray-600">
-        Choose your preferred authentication method to access the G-TEAD Marketplace
-      </div>
+    <div className="flex gap-4">
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button 
+            className="bg-accent text-primary px-8 py-3 text-lg font-semibold hover:bg-yellow-500 transition-colors transform hover:scale-105"
+            data-testid="button-landing-auth"
+          >
+            Get Started
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Join G-TEAD Marketplace</DialogTitle>
+          </DialogHeader>
+          
+          <Tabs defaultValue="register" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="register">Register</TabsTrigger>
+              <TabsTrigger value="login">Sign In</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="register">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Create Account</CardTitle>
+                  <CardDescription>
+                    Join as a Vendor or Government user
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="landing-register-firstName">First Name</Label>
+                        <Input
+                          id="landing-register-firstName"
+                          placeholder="John"
+                          {...registerForm.register("firstName")}
+                          data-testid="input-landing-register-firstName"
+                        />
+                        {registerForm.formState.errors.firstName && (
+                          <p className="text-sm text-red-500">{registerForm.formState.errors.firstName.message}</p>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="landing-register-lastName">Last Name</Label>
+                        <Input
+                          id="landing-register-lastName"
+                          placeholder="Doe"
+                          {...registerForm.register("lastName")}
+                          data-testid="input-landing-register-lastName"
+                        />
+                        {registerForm.formState.errors.lastName && (
+                          <p className="text-sm text-red-500">{registerForm.formState.errors.lastName.message}</p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="landing-register-email">Email</Label>
+                      <Input
+                        id="landing-register-email"
+                        type="email"
+                        placeholder="your.email@example.com"
+                        {...registerForm.register("email")}
+                        data-testid="input-landing-register-email"
+                      />
+                      {registerForm.formState.errors.email && (
+                        <p className="text-sm text-red-500">{registerForm.formState.errors.email.message}</p>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="landing-register-password">Password</Label>
+                      <Input
+                        id="landing-register-password"
+                        type="password"
+                        placeholder="At least 8 characters"
+                        {...registerForm.register("password")}
+                        data-testid="input-landing-register-password"
+                      />
+                      {registerForm.formState.errors.password && (
+                        <p className="text-sm text-red-500">{registerForm.formState.errors.password.message}</p>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="landing-register-role">Role</Label>
+                      <Select 
+                        onValueChange={(value) => registerForm.setValue("role", value as "vendor" | "government")}
+                        data-testid="select-landing-register-role"
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="vendor">Vendor / Technology Provider</SelectItem>
+                          <SelectItem value="government">Government / Military (.mil required)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {registerForm.formState.errors.role && (
+                        <p className="text-sm text-red-500">{registerForm.formState.errors.role.message}</p>
+                      )}
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full"
+                      disabled={registerMutation.isPending}
+                      data-testid="button-landing-register-submit"
+                    >
+                      {registerMutation.isPending ? "Creating Account..." : "Create Account"}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="login">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Sign In</CardTitle>
+                  <CardDescription>
+                    Access your existing account
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="landing-login-email">Email</Label>
+                      <Input
+                        id="landing-login-email"
+                        type="email"
+                        placeholder="your.email@example.com"
+                        {...loginForm.register("email")}
+                        data-testid="input-landing-login-email"
+                      />
+                      {loginForm.formState.errors.email && (
+                        <p className="text-sm text-red-500">{loginForm.formState.errors.email.message}</p>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="landing-login-password">Password</Label>
+                      <Input
+                        id="landing-login-password"
+                        type="password"
+                        placeholder="Your password"
+                        {...loginForm.register("password")}
+                        data-testid="input-landing-login-password"
+                      />
+                      {loginForm.formState.errors.password && (
+                        <p className="text-sm text-red-500">{loginForm.formState.errors.password.message}</p>
+                      )}
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full"
+                      disabled={loginMutation.isPending}
+                      data-testid="button-landing-login-submit"
+                    >
+                      {loginMutation.isPending ? "Signing In..." : "Sign In"}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

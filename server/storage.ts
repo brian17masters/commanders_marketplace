@@ -21,8 +21,10 @@ import {
 
 // Interface for storage operations
 export interface IStorage {
-  // User operations - mandatory for Replit Auth
+  // User operations
   getUser(id: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: Omit<UpsertUser, 'id'> & { password: string; role: string }): Promise<User>;
   upsertUser(user: UpsertUser): Promise<User>;
   
   // Challenge operations
@@ -65,6 +67,7 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private users = new Map<string, User>();
+  private usersByEmail = new Map<string, User>();
   private challenges = new Map<string, Challenge>();
   private solutions = new Map<string, Solution>();
   private reviews = new Map<string, Review>();
@@ -156,6 +159,35 @@ export class MemStorage implements IStorage {
     return this.users.get(id);
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return this.usersByEmail.get(email.toLowerCase());
+  }
+
+  async createUser(userData: Omit<UpsertUser, 'id'> & { password: string; role: string }): Promise<User> {
+    const user: User = {
+      id: crypto.randomUUID(),
+      email: userData.email,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      profileImageUrl: userData.profileImageUrl || null,
+      role: userData.role,
+      organization: userData.organization || null,
+      uei: userData.uei || null,
+      securityClearance: userData.securityClearance || null,
+      contractingOfficer: userData.contractingOfficer || null,
+      loginProvider: "local",
+      password: userData.password,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    this.users.set(user.id, user);
+    if (user.email) {
+      this.usersByEmail.set(user.email.toLowerCase(), user);
+    }
+    return user;
+  }
+
   async upsertUser(userData: UpsertUser): Promise<User> {
     const existingUser = this.users.get(userData.id!);
     const user: User = {
@@ -165,6 +197,9 @@ export class MemStorage implements IStorage {
     } as User;
     
     this.users.set(user.id, user);
+    if (user.email) {
+      this.usersByEmail.set(user.email.toLowerCase(), user);
+    }
     return user;
   }
 
