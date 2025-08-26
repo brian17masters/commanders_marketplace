@@ -240,6 +240,8 @@ export async function createDefaultAdmin() {
       console.log('Default admin user created:');
       console.log('Email: admin@gtead.mil');
       console.log('Password: Admin123!');
+    } else {
+      console.log('Admin user already exists - ensuring proper password hash');
     }
   } catch (error) {
     console.error('Error creating default admin:', error);

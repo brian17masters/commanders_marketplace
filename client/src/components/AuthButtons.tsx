@@ -69,6 +69,10 @@ export function AuthButtons({ variant = "header" }: AuthButtonsProps) {
   const loginMutation = useMutation({
     mutationFn: async (data: LoginData) => {
       const response = await apiRequest("POST", "/api/login", data);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Login failed');
+      }
       return response.json();
     },
     onSuccess: () => {
