@@ -82,7 +82,7 @@ export default function GovernmentPortal() {
   });
 
   const { data: matchingResults, refetch: refetchMatching } = useQuery<MatchingResult>({
-    queryKey: ["/api/match", { query: searchQuery }],
+    queryKey: ["/api/match", searchQuery],
     enabled: false,
   });
 
@@ -150,7 +150,7 @@ export default function GovernmentPortal() {
         description: `Found ${results.totalMatches} relevant matches`,
       });
       refetchMatching();
-    } catch (error) {
+    } catch (error: any) {
       if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
         toast({
           title: "Unauthorized",
@@ -270,7 +270,7 @@ export default function GovernmentPortal() {
                       <SelectValue placeholder="Technology Readiness Level" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All TRLs</SelectItem>
+                      <SelectItem value="all">All TRLs</SelectItem>
                       {Array.from({ length: 9 }, (_, i) => i + 1).map((level) => (
                         <SelectItem key={level} value={level.toString()}>
                           TRL {level}
@@ -287,7 +287,7 @@ export default function GovernmentPortal() {
                       <SelectValue placeholder="NATO Compatibility" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Solutions</SelectItem>
+                      <SelectItem value="all">All Solutions</SelectItem>
                       <SelectItem value="true">NATO Compatible</SelectItem>
                       <SelectItem value="false">Not NATO Compatible</SelectItem>
                     </SelectContent>
@@ -301,7 +301,7 @@ export default function GovernmentPortal() {
                       <SelectValue placeholder="Security Clearance" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Solutions</SelectItem>
+                      <SelectItem value="all">All Solutions</SelectItem>
                       <SelectItem value="true">Security Cleared</SelectItem>
                       <SelectItem value="false">Not Security Cleared</SelectItem>
                     </SelectContent>

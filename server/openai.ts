@@ -91,7 +91,7 @@ export class OpenAIService {
         model: "gpt-5",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
-        max_tokens: 1000,
+        max_completion_tokens: 1000,
       });
 
       const result = JSON.parse(response.choices[0].message.content || "{}");
@@ -125,7 +125,7 @@ export class OpenAIService {
       const response = await openai.chat.completions.create({
         model: "gpt-5",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 600,
+        max_completion_tokens: 600,
       });
 
       return response.choices[0].message.content || "Unable to generate submission tips at this time.";
@@ -156,7 +156,7 @@ export class OpenAIService {
         model: "gpt-5",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
-        max_tokens: 800,
+        max_completion_tokens: 800,
       });
 
       const result = JSON.parse(response.choices[0].message.content || "{}");
