@@ -137,7 +137,7 @@
   }
 
   .chat-bubble {
-    animation: bounce 4s infinite;
+    /* No animation - removed bouncing */
   }
 
   @keyframes bounce {
