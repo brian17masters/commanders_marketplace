@@ -6,6 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/Landing";
 import Home from "@/pages/Home";
+import Challenges from "@/pages/Challenges";
+import Solutions from "@/pages/Solutions";
 import VendorPortal from "@/pages/VendorPortal";
 import GovernmentPortal from "@/pages/GovernmentPortal";
 import ContractingPortal from "@/pages/ContractingPortal";
@@ -23,6 +25,8 @@ function Router() {
       ) : (
         <>
           <Route path="/" component={Home} />
+          <Route path="/challenges" component={Challenges} />
+          <Route path="/solutions" component={Solutions} />
           <Route path="/vendor-portal" component={VendorPortal} />
           <Route path="/government-portal" component={GovernmentPortal} />
           <Route path="/contracting-portal" component={ContractingPortal} />

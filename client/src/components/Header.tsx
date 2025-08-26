@@ -52,14 +52,14 @@ export default function Header() {
             </button>
             <button 
               className="text-white hover:text-accent transition-colors"
-              onClick={() => handleNavigation("/#challenges")}
+              onClick={() => handleNavigation("/challenges")}
               data-testid="nav-challenges"
             >
               Challenges
             </button>
             <button 
               className="text-white hover:text-accent transition-colors"
-              onClick={() => handleNavigation("/#solutions")}
+              onClick={() => handleNavigation("/solutions")}
               data-testid="nav-solutions"
             >
               Solutions
@@ -172,14 +172,14 @@ export default function Header() {
               </button>
               <button 
                 className="block w-full text-left text-white hover:text-accent py-2"
-                onClick={() => handleNavigation("/#challenges")}
+                onClick={() => handleNavigation("/challenges")}
                 data-testid="mobile-nav-challenges"
               >
                 Challenges
               </button>
               <button 
                 className="block w-full text-left text-white hover:text-accent py-2"
-                onClick={() => handleNavigation("/#solutions")}
+                onClick={() => handleNavigation("/solutions")}
                 data-testid="mobile-nav-solutions"
               >
                 Solutions
