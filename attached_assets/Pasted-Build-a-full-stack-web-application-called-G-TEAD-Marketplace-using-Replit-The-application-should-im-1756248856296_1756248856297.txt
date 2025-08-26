@@ -1,0 +1,106 @@
+Build a full-stack web application called G-TEAD Marketplace using Replit. The application should implement the following website concept as a functional prototype, emphasizing a simple, intuitive user experience with clean navigation, minimal clutter, and straightforward workflows. Use React for the frontend to create responsive, mobile-first UI components. For the backend, use Node.js with Express to handle API routes, authentication, and data processing. Use MongoDB as the database to store vendor information, solution submissions, reviews, feedback, and other data. Integrate role-based authentication (e.g., using JWT) for different user types: public visitors, vendors, government buyers, contracting officers, and program managers.
+
+The design should follow Army branding: deep greens (#003300, #004d00) as primary colors, gold accents (#D4AF37) for highlights, black/gray (#000000, #333333, #666666) as secondary tones. Include the Army crest and NATO branding in the header and footer (use placeholder images or fetch from public sources like https://www.army.mil/ for crest and https://www.nato.int/ for NATO logo). Use consistent typography aligned with Army web guidelines (e.g., sans-serif fonts like Arial or Helvetica for readability). Ensure the app is responsive and mobile-first, with simple layouts like card-based views for solutions and dashboards.
+
+Leverage inspirations from https://www.tradewindai.com/ (Tradewinds AI): Incorporate a dynamic Solutions Marketplace similar to their TSM, featuring 5-minute pitch video uploads/submissions, a centralized hub for showcasing technologies, and sections for opportunities & challenges. Emphasize streamlined procurement and real-time collaboration between government and vendors.
+
+Leverage inspirations from https://xtech.army.mil/ (xTech Army): Include prize competitions with phased workflows (e.g., Phase 1: white paper submission, Phase 2: pitch event, Phase 3: proof-of-concept and potential contracts). Have sections for open and active competitions, with education, mentorship, and networking features. Seed the database with the following specific challenges from xTech (as of August 2025) to populate the "Challenges" or "Onramps" section—allow admins to add/update more via the app:
+
+1. **xTechHumanoid**: The U.S. Army seeks transformative humanoid technologies to enhance warfighter survivability, sustain combat power, and operate in complex environments. Focus: Prototype militarized humanoids and subsystems like AI, sensors, power systems. Phases: Part 1 - Concept White Paper (5-page paper + optional 3-5 min video); Part 2 - Final Experimentation Event (live demo). Deadlines: White Paper from August 6, 2025, to October 1, 2025; Finals in August/September 2026. Eligibility: Nonprofit/for-profit organizations (large/small, domestic/foreign); must have CAGE/NCAGE code; not federal/government entities. Prizes: Up to 10 at $25,000 each for Part 1; Up to 2 baseline winners at $75,000 each and up to 3 subsystem winners at $30,000 each for Part 2 (total up to $490,000). Follow-on: Up to $1.25 million in contracts. Submission: Via xTech system, outline technology viability and military benefit. Evaluation: Assess technology state, readiness, and performance.
+
+2. **xTechSearch 9**: Open-topic competition for groundbreaking technologies with commercial traction. Focus: Sensors (devices/output processing); Immersive/Wearables (XR, performance gear); AI/ML (operations/decision-making); Energy Resiliency (efficiency, reduced logistics); Contested Logistics/Sustainment (planning under adversity). Excludes medical research areas. Phases: Phase 1 - Concept White Paper; Phase 2 - Final Pitch Event; Phase 3 - Phase I Army SBIR Proposal. Deadlines: White Paper closed June 4, 2025; Finals September 8-19, 2025; SBIR Proposal October 6-24, 2025. Eligibility: U.S. small businesses (<500 employees, >50% U.S. owned/controlled by citizens/residents); no duplicates with other federal funding. Prizes: Up to 60 semi-finalists at $5,000 each; Up to 24 finalists at $25,000 each (total up to $900,000). Follow-on: Phase I SBIR up to $250,000 each; accelerator program. Submission: White paper on technology, Army application, team; treated as privileged info.
+
+Strong emphasis on end-user feedback: Integrate Amazon-style reviews (1-5 stars, narratives) for solutions, visible only to government users but sanitized for vendors. Add feedback forms on every major page (e.g., post-submission, after searches, on dashboards) to collect ratings and comments. Use a dedicated feedback portal in vendor/government dashboards to track and respond to input. Analyze feedback via simple analytics (e.g., average ratings) displayed in admin views.
+
+Integrate OpenAI API (assume the user provides an API key in environment variables): 
+- Add a GenAI chat feature (e.g., using OpenAI's ChatGPT model) as a sidebar assistant for users—vendors can ask for submission tips, government users for procurement guidance.
+- Use OpenAI embeddings/completions for matching: Embed vendor solution descriptions and challenge problem statements; implement a recommendation engine where users query problem sets (e.g., "AI for logistics"), and the app suggests matching vendors/technologies via semantic search. Display matches with explanations generated by OpenAI.
+
+Implement the full concept below as core features:
+
+# G-TEAD Marketplace Website Concept
+
+## 1. Vision & Purpose
+The G-TEAD Marketplace is the Army’s global digital environment designed to rapidly source, evaluate, and procure innovative technologies from U.S., NATO, and foreign vendors. It supports USAREUR-AF’s immediate needs while providing a scalable foundation for all Combatant Commands (COCOMs) under G-TEAD program management. The website aims to:
+
+- Streamline competition through Challenges, Open Calls, and AOS-aligned Calls for Solutions.
+- Provide a compliant marketplace where solutions are “post-competitive” and ready for rapid award.
+- Offer role-specific portals for Vendors, Government Buyers, and Contracting/Agreements Officers.
+- Embed the Acquisition Playbook (DRAID, TSM, P1SM) as live, interactive guidance.
+- Enable Government-only reviews (Amazon-style) to capture candid performance feedback.
+
+## 2. Target Users
+- **Warfighters**: End-users seeking operationally relevant technologies.
+- **Vendors**: U.S. and foreign companies, nontraditional vendors, small businesses, and primes.
+- **Government Buyers**: USAREUR-AF units, NATO allies, DoD agencies, and eventually all COCOMs.
+- **Contracting/Agreements Officers**: U.S. and NATO acquisition professionals executing FAR and Other Transaction (OT) buys.
+- **Program Managers & Evaluators**: Stakeholders managing demonstrations, down-selects, and kit deployments.
+
+## 3. Structure & Features
+
+### A. Public-Facing Layer
+**Purpose**: Promote transparency, outreach, and vendor engagement.  
+**Features**:
+- Landing page with mission overview, featuring Army and NATO branding.
+- Calendar of Onramps (Challenges, Open Calls, Calls for Solutions)—integrate the seeded xTech challenges here.
+- Announcements & Newsroom for award notices, demo highlights, and marketplace growth updates.
+- FAQs for vendors and government users.
+- Contact and onboarding instructions for new users.
+
+### B. Vendor Portal
+**Purpose**: Enable industry participation and solution submission.  
+**Features**:
+- Vendor registration with fields for UEI, CAGE, NATO/FMS eligibility, and nontraditional status.
+- Submission workspace for solution briefs, video pitches (upload/support 5-min videos), and challenge applications.
+- Dashboard to track submission status (e.g., “Under Review,” “Awardable”).
+- Feedback portal for government feedback from demos, reviews, and kit use.
+- Compliance forms for telecom/FCC restrictions and NATO eligibility.
+- Secure file validation for CUI/FOUO tagging and export control checks.
+
+### C. Government Portal
+**Purpose**: Provide acquisition-ready solutions in a compliant, user-friendly interface.  
+**Features**:
+- **Search & Discovery**: Filter by capability area, Technology Readiness Level (TRL), NATO releasability, business size, and cybersecurity posture. Integrate OpenAI for smart matching/recommendations.
+- **Solution Profiles**:
+  - Summary of capability and TRL.
+  - Demo results and assessment package (aligned with TSM model).
+  - Government-only reviews with 1–5 star ratings and narratives on performance, readiness, interoperability, and cybersecurity posture.
+  - Acquisition pathway options (FAR, OT, AOS alignment).
+- **Amazon-style Reviews (Government-only)**:
+  - Ratings and After-Action Reports (AARs) from demos and operational use.
+  - Sanitized feedback shared with vendors.
+- **Procurement Workbench**:
+  - Request Assessment Package functionality.
+  - Auto-generate decision memos and competition evidence binders (use templates).
+  - Order initiation for FAR-based contracts or OT agreements.
+- **Playbook Integration**:
+  - Interactive acquisition steps from DRAID Ordering Guide, P1SM, and TSM.
+  - Context-aware checklists and templates for streamlined procurement.
+
+## 4. Content Model
+- **Announcements**: Calls for Solutions aligned with AOS priorities.
+- **Solution Profiles**: Vendor submissions paired with evaluation results.
+- **Playbook Section**: Interactive acquisition guides (TSM Handbook, Acquisition Guide, DRAID Ordering Guide).
+- **Support**: Knowledge base, ticketing system, and user guides for vendors and government users.
+
+## 5. Branding & Design
+- **Color Palette**: Deep greens, gold accents, black/gray secondary tones, aligned with Army branding.
+- **Logos**: Army crest and NATO branding in header/footer.
+- **Typography**: Consistent with Army web guidelines for readability and professionalism.
+- **Design Approach**: Responsive, mobile-first design to ensure accessibility across devices.
+
+## 6. Value Proposition
+- **For Government**: Accelerated procurement, compliant competition, and decision-ready evidence.
+- **For Vendors**: Clear entry points, constructive feedback for improvement, and visibility with NATO partners.
+- **For Army/NATO**: A shared innovation ecosystem that reduces duplication and delivers coalition-ready capabilities.
+
+Additional implementation notes: 
+- Use secure file uploads (e.g., Multer for Node) for videos/briefs.
+- Implement email notifications (e.g., Nodemailer) for status updates, feedback.
+- Add admin role for managing challenges, users, and content.
+- Ensure compliance with basic security (e.g., helmet, bcrypt for passwords).
+- For OpenAI: Use the OpenAI Node SDK; create endpoints for chat and matching (e.g., /api/match?query=... returns recommendations).
+- Test for simple UX: Use short forms, progress indicators, tooltips.
+- Deploy on Replit with database connection via MongoDB Atlas.
+
+Start by setting up the project structure, then build frontend/backend, integrate DB and OpenAI, and seed with sample data including the xTech challenges. Provide setup instructions and a demo user login in the README.
