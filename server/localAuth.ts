@@ -61,7 +61,7 @@ export async function setupAuth(app: Express) {
           return done(null, false, { message: 'Invalid email or password' });
         }
 
-        const isValid = await comparePasswords(password, user.password!);
+        const isValid = await comparePasswords(password, user.password);
         if (!isValid) {
           return done(null, false, { message: 'Invalid email or password' });
         }
@@ -73,7 +73,7 @@ export async function setupAuth(app: Express) {
     }
   ));
 
-  passport.serializeUser((user: User, done) => {
+  passport.serializeUser((user: any, done) => {
     done(null, user.id);
   });
 
