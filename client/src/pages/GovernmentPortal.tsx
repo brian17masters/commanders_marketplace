@@ -3,7 +3,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { isUnauthorizedError } from "@/lib/authUtils";
 import type { Solution } from "@shared/schema";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -66,7 +65,7 @@ export default function GovernmentPortal() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        window.location.href = "/";
       }, 500);
       return;
     }
@@ -114,14 +113,14 @@ export default function GovernmentPortal() {
       queryClient.invalidateQueries({ queryKey: ["/api/solutions"] });
     },
     onError: (error) => {
-      if (isUnauthorizedError(error)) {
+      if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
         toast({
           title: "Unauthorized",
           description: "You are logged out. Logging in again...",
           variant: "destructive",
         });
         setTimeout(() => {
-          window.location.href = "/api/login";
+          window.location.href = "/";
         }, 500);
         return;
       }
@@ -152,14 +151,14 @@ export default function GovernmentPortal() {
       });
       refetchMatching();
     } catch (error) {
-      if (isUnauthorizedError(error)) {
+      if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
         toast({
           title: "Unauthorized",
           description: "You are logged out. Logging in again...",
           variant: "destructive",
         });
         setTimeout(() => {
-          window.location.href = "/api/login";
+          window.location.href = "/";
         }, 500);
         return;
       }

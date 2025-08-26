@@ -77,7 +77,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/challenges', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || user.role !== 'admin') {
@@ -132,7 +132,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/solutions', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || user.role !== 'vendor') {
@@ -153,7 +153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch('/api/solutions/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const solution = await storage.getSolution(req.params.id);
       
       if (!solution) {
@@ -176,7 +176,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Review routes (government users only)
   app.get('/api/solutions/:id/reviews', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || !['government', 'contracting_officer', 'admin'].includes(user.role)) {
@@ -193,7 +193,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/solutions/:id/reviews', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || !['government', 'contracting_officer'].includes(user.role)) {
@@ -216,7 +216,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Application routes
   app.get('/api/applications', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { challengeId, status } = req.query;
       
       const applications = await storage.getApplications({
@@ -234,7 +234,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/applications', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || user.role !== 'vendor') {
@@ -399,7 +399,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI Chat routes
   app.post('/api/chat', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       const { message, context } = req.body;
 
@@ -430,7 +430,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/chat/history', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const limit = parseInt(req.query.limit as string) || 50;
       
       const history = await storage.getChatHistory(userId, limit);
@@ -485,7 +485,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User profile routes
   app.patch('/api/profile', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const updates = req.body;
       
       const updatedUser = await storage.upsertUser({
