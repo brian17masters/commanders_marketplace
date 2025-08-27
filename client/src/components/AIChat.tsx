@@ -303,20 +303,6 @@ export default function AIChat({ isOpen, onClose }: AIChatProps) {
                 )}
               </Button>
             </div>
-            {!isAuthenticated && (
-              <p className="text-xs text-muted-foreground mt-2 text-center">
-                <Button
-                  variant="link"
-                  size="sm"
-                  className="p-0 h-auto text-xs"
-                  onClick={() => window.location.href = "/api/login"}
-                  data-testid="button-signin-chat"
-                >
-                  Sign in
-                </Button>
-                {" "}to access AI assistance
-              </p>
-            )}
           </div>
         </div>
       </SheetContent>

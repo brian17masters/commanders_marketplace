@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,6 +23,7 @@ import {
 
 export default function Landing() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [, setLocation] = useLocation();
   
   const { data: stats } = useQuery({
     queryKey: ["/api/stats"],
@@ -214,14 +216,14 @@ export default function Landing() {
                   <div className="flex gap-3">
                     <Button 
                       className="flex-1"
-                      onClick={() => window.location.href = "/api/login"}
+                      onClick={() => setLocation(`/challenges/${challenge.id}`)}
                       data-testid={`button-apply-challenge-${challenge.id}`}
                     >
                       Apply Now
                     </Button>
                     <Button 
                       variant="outline"
-                      onClick={() => window.location.href = "/api/login"}
+                      onClick={() => setLocation(`/challenges/${challenge.id}`)}
                       data-testid={`button-view-details-${challenge.id}`}
                     >
                       Details
@@ -236,7 +238,7 @@ export default function Landing() {
             <Button 
               variant="secondary"
               className="px-8 py-3 text-lg font-semibold"
-              onClick={() => window.location.href = "/api/login"}
+              onClick={() => setLocation("/challenges")}
               data-testid="button-view-all-challenges"
             >
               View All Challenges ({Array.isArray(challenges) ? challenges.length : 47})
@@ -286,7 +288,7 @@ export default function Landing() {
                 </ul>
                 <Button 
                   className="w-full"
-                  onClick={() => window.location.href = "/api/login"}
+                  onClick={() => setLocation("/vendor")}
                   data-testid="button-vendor-portal-access"
                 >
                   Access Vendor Portal
@@ -324,7 +326,7 @@ export default function Landing() {
                 </ul>
                 <Button 
                   className="w-full"
-                  onClick={() => window.location.href = "/api/login"}
+                  onClick={() => setLocation("/government")}
                   data-testid="button-government-portal-access"
                 >
                   Access Government Portal
@@ -362,7 +364,7 @@ export default function Landing() {
                 </ul>
                 <Button 
                   className="w-full"
-                  onClick={() => window.location.href = "/api/login"}
+                  onClick={() => setLocation("/contracting")}
                   data-testid="button-contracting-portal-access"
                 >
                   Access Contracting Portal

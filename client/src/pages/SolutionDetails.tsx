@@ -91,17 +91,6 @@ export default function SolutionDetails() {
       queryClient.invalidateQueries({ queryKey: ["/api/solutions", id, "reviews"] });
     },
     onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
       toast({
         title: "Error",
         description: "Failed to submit review",
