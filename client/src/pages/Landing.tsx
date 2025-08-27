@@ -173,14 +173,14 @@ export default function Landing() {
                   <div className="flex space-x-2">
                     <Button 
                       variant="outline" 
-                      onClick={() => setLocation("/government")}
+                      onClick={() => setLocation("/government-portal")}
                       data-testid="button-government-portal"
                     >
                       Government Portal
                     </Button>
                     <Button 
                       variant="outline" 
-                      onClick={() => setLocation("/vendor")}
+                      onClick={() => setLocation("/vendor-portal")}
                       data-testid="button-vendor-portal"
                     >
                       Vendor Portal

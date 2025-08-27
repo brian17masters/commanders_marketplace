@@ -204,77 +204,56 @@ export class OpenAIService {
     solutions: any[]
   ): Promise<CapabilitySearchResponse> {
     try {
-      const prompt = `
-        You are the Commander's Capability Search AI for the G-TEAD Marketplace, designed to help military commanders find the best technology solutions for their operational requirements.
+      // Limit to first 20 solutions for faster processing
+      const limitedSolutions = solutions.slice(0, 20);
+      
+      const prompt = `Analyze military requirement and match solutions.
 
-        MISSION: Analyze the commander's requirement and match it against available military technology solutions from the marketplace.
+REQUIREMENT: "${requirementDescription}"
 
-        COMMANDER'S REQUIREMENT:
-        "${requirementDescription}"
+SOLUTIONS: ${JSON.stringify(limitedSolutions.map(s => ({
+  id: s.id,
+  title: s.title,
+  description: s.description.substring(0, 200),
+  capabilityAreas: s.capabilityAreas,
+  trl: s.trl,
+  natoCompatible: s.natoCompatible,
+  securityCleared: s.securityCleared
+})))}
 
-        AVAILABLE SOLUTIONS:
-        ${JSON.stringify(solutions.map(s => ({
-          id: s.id,
-          title: s.title,
-          description: s.description,
-          capabilityAreas: s.capabilityAreas,
-          trl: s.trl,
-          natoCompatible: s.natoCompatible,
-          securityCleared: s.securityCleared,
-          vendorId: s.vendorId
-        })))}
-
-        ANALYSIS REQUIREMENTS:
-        1. Match each relevant solution against the commander's requirement
-        2. Provide match percentage (0-100%) based on how well the solution addresses the requirement
-        3. Explain WHY each solution is relevant and how it addresses the specific need
-        4. Consider if multiple vendors/solutions might be needed together for a complete capability
-        5. Focus on operational effectiveness, interoperability, and mission success
-
-        ARMY WARFIGHTING FUNCTIONS TO CONSIDER:
-        - Mission Command: Command, control, communications, computers, intelligence, surveillance, reconnaissance
-        - Movement and Maneuver: Deployment, mobility, countermobility, survivability
-        - Intelligence: Collection, processing, analysis, dissemination of intelligence
-        - Fires: Use of weapon systems to create lethal and nonlethal effects
-        - Sustainment: Logistics, personnel services, health service support
-        - Protection: Preservation of the force from threats and hazards
-
-        Return results in JSON format with:
-        {
-          "matches": [
-            {
-              "id": "solution_id",
-              "title": "solution_title", 
-              "description": "solution_description",
-              "matchPercentage": 85,
-              "relevanceExplanation": "Detailed explanation of how this solution addresses the commander's requirement",
-              "capabilityAreas": ["relevant", "warfighting", "functions"],
-              "trl": 7,
-              "natoCompatible": true,
-              "securityCleared": false
-            }
-          ],
-          "multiVendorScenario": {
-            "description": "Explanation of why multiple solutions might be needed",
-            "recommendedCombinations": [
-              {
-                "primarySolution": "primary_solution_id",
-                "supportingSolutions": ["supporting_solution_id1", "supporting_solution_id2"],
-                "explanation": "How these solutions work together for complete capability"
-              }
-            ]
-          },
-          "totalMatches": number
-        }
-
-        ONLY include solutions with match percentage >= 30%. Prioritize solutions with higher TRL (Technology Readiness Level) and those that are NATO compatible when relevant.
-      `;
+Return JSON with matching solutions (30%+ match only):
+{
+  "matches": [
+    {
+      "id": "solution_id",
+      "title": "solution_title", 
+      "description": "solution_description",
+      "matchPercentage": 85,
+      "relevanceExplanation": "Brief explanation of relevance",
+      "capabilityAreas": ["area1", "area2"],
+      "trl": 7,
+      "natoCompatible": true,
+      "securityCleared": false
+    }
+  ],
+  "multiVendorScenario": {
+    "description": "Brief explanation if multiple solutions needed",
+    "recommendedCombinations": [
+      {
+        "primarySolution": "primary_title",
+        "supportingSolutions": ["support1_title", "support2_title"],
+        "explanation": "Brief combination explanation"
+      }
+    ]
+  },
+  "totalMatches": number
+}`;
 
       const response = await openai.chat.completions.create({
         model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
-        max_completion_tokens: 2000,
+        max_completion_tokens: 1500,
       });
 
       const result = JSON.parse(response.choices[0].message.content || "{}");
