@@ -474,9 +474,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get all available solutions
       const solutions = await storage.getSolutions();
+      console.log(`Found ${solutions.length} solutions for capability search`);
       
+      if (solutions.length === 0) {
+        return res.json({
+          matches: [],
+          totalMatches: 0,
+          message: "No solutions available in the database"
+        });
+      }
+
       // Use OpenAI to analyze and match solutions
       const searchResults = await openaiService.commanderCapabilitySearch(requirement, solutions);
+      console.log(`OpenAI returned ${searchResults.totalMatches} matches`);
       
       res.json(searchResults);
     } catch (error) {

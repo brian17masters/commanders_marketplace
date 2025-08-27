@@ -60,12 +60,12 @@ export class OpenAIService {
       }
 
       const response = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "gpt-4o",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: message }
         ],
-        max_completion_tokens: 500,
+        max_tokens: 500,
       });
 
       return {
@@ -111,10 +111,10 @@ export class OpenAIService {
       `;
 
       const response = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "gpt-4o",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
-        max_completion_tokens: 1000,
+        max_tokens: 1000,
       });
 
       const result = JSON.parse(response.choices[0].message.content || "{}");
@@ -146,9 +146,9 @@ export class OpenAIService {
       `;
 
       const response = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "gpt-4o",
         messages: [{ role: "user", content: prompt }],
-        max_completion_tokens: 600,
+        max_tokens: 600,
       });
 
       return response.choices[0].message.content || "Unable to generate submission tips at this time.";
@@ -176,10 +176,10 @@ export class OpenAIService {
       `;
 
       const response = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "gpt-4o",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
-        max_completion_tokens: 800,
+        max_tokens: 800,
       });
 
       const result = JSON.parse(response.choices[0].message.content || "{}");
@@ -204,62 +204,70 @@ export class OpenAIService {
     solutions: any[]
   ): Promise<CapabilitySearchResponse> {
     try {
+      console.log(`Processing ${solutions.length} solutions for requirement: "${requirementDescription}"`);
+      
       // Limit to first 20 solutions for faster processing
       const limitedSolutions = solutions.slice(0, 20);
+      console.log(`Using ${limitedSolutions.length} solutions for AI analysis`);
       
-      const prompt = `Analyze military requirement and match solutions.
+      // Create a simpler, more reliable prompt that should return matches
+      const prompt = `You are a military technology advisor. Match the requirement to relevant solutions.
 
 REQUIREMENT: "${requirementDescription}"
 
-SOLUTIONS: ${JSON.stringify(limitedSolutions.map(s => ({
-  id: s.id,
-  title: s.title,
-  description: s.description.substring(0, 200),
-  capabilityAreas: s.capabilityAreas,
-  trl: s.trl,
-  natoCompatible: s.natoCompatible,
-  securityCleared: s.securityCleared
-})))}
+AVAILABLE SOLUTIONS:
+${limitedSolutions.map((s, i) => `${i+1}. ID: ${s.id}, Title: ${s.title}, Areas: ${s.capabilityAreas?.join(', ') || 'General'}, TRL: ${s.trl}, NATO: ${s.natoCompatible ? 'Yes' : 'No'}`).join('\n')}
 
-Return JSON with matching solutions (30%+ match only):
+Find solutions that match the requirement (minimum 30% relevance). Return JSON:
 {
   "matches": [
     {
       "id": "solution_id",
-      "title": "solution_title", 
-      "description": "solution_description",
-      "matchPercentage": 85,
-      "relevanceExplanation": "Brief explanation of relevance",
+      "title": "solution_title",
+      "description": "brief_description", 
+      "matchPercentage": 75,
+      "relevanceExplanation": "why this solution matches the requirement",
       "capabilityAreas": ["area1", "area2"],
       "trl": 7,
       "natoCompatible": true,
       "securityCleared": false
     }
   ],
-  "multiVendorScenario": {
-    "description": "Brief explanation if multiple solutions needed",
-    "recommendedCombinations": [
-      {
-        "primarySolution": "primary_title",
-        "supportingSolutions": ["support1_title", "support2_title"],
-        "explanation": "Brief combination explanation"
-      }
-    ]
-  },
-  "totalMatches": number
-}`;
+  "totalMatches": 1
+}
 
+Be generous with matches - if a solution could potentially help with the requirement, include it with an appropriate percentage.`;
+
+      console.log("Sending request to OpenAI...");
       const response = await openai.chat.completions.create({
-        model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+        model: "gpt-4o", // Using gpt-4o which is known to work well with JSON responses
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
-        max_completion_tokens: 1500,
+        max_tokens: 1500,
       });
 
-      const result = JSON.parse(response.choices[0].message.content || "{}");
+      console.log("Received response from OpenAI");
+      const responseContent = response.choices[0].message.content || "{}";
+      console.log("OpenAI response content:", responseContent.substring(0, 500) + "...");
+      
+      const result = JSON.parse(responseContent);
+      console.log(`Parsed result - found ${result.matches?.length || 0} matches`);
+      
+      // Ensure we have the full solution data for each match
+      const enrichedMatches = (result.matches || []).map((match: any) => {
+        const fullSolution = solutions.find(s => s.id === match.id);
+        return {
+          ...match,
+          description: fullSolution?.description || match.description,
+          capabilityAreas: fullSolution?.capabilityAreas || match.capabilityAreas || [],
+          trl: fullSolution?.trl || match.trl,
+          natoCompatible: fullSolution?.natoCompatible || match.natoCompatible,
+          securityCleared: fullSolution?.securityCleared || match.securityCleared
+        };
+      });
       
       // Sort matches by match percentage descending
-      const sortedMatches = (result.matches || []).sort((a: any, b: any) => b.matchPercentage - a.matchPercentage);
+      const sortedMatches = enrichedMatches.sort((a: any, b: any) => b.matchPercentage - a.matchPercentage);
       
       return {
         matches: sortedMatches,
