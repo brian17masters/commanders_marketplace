@@ -4,9 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Building, Lightbulb } from "lucide-react";
+import { Search, Building, Lightbulb, Star } from "lucide-react";
 import { useLocation } from "wouter";
 import Header from "@/components/Header";
+import SolutionCard from "@/components/SolutionCard";
 import type { Solution } from "@shared/schema";
 
 export default function Solutions() {
@@ -15,6 +16,32 @@ export default function Solutions() {
 
   const { data: solutions = [], isLoading } = useQuery<Solution[]>({
     queryKey: ["/api/solutions"],
+  });
+
+  // Fetch reviews for all solutions
+  const { data: solutionReviews = {} } = useQuery({
+    queryKey: ['/api/solutions-reviews'],
+    queryFn: async () => {
+      const reviewsData: {[key: string]: any[]} = {};
+      if (solutions.length > 0) {
+        await Promise.all(
+          solutions.map(async (solution) => {
+            try {
+              const response = await fetch(`/api/solutions/${solution.id}/reviews`);
+              if (response.ok) {
+                reviewsData[solution.id] = await response.json();
+              } else {
+                reviewsData[solution.id] = [];
+              }
+            } catch {
+              reviewsData[solution.id] = [];
+            }
+          })
+        );
+      }
+      return reviewsData;
+    },
+    enabled: solutions.length > 0,
   });
 
   const filteredSolutions = solutions.filter(solution =>
@@ -78,54 +105,17 @@ export default function Solutions() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredSolutions.map((solution) => (
-              <Card 
-                key={solution.id} 
-                className="hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => setLocation(`/solutions/${solution.id}`)}
-                data-testid={`card-solution-${solution.id}`}
-              >
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold text-gray-900">
-                    {solution.title}
-                  </CardTitle>
-                  <CardDescription className="text-sm text-gray-600">
-                    {solution.description.substring(0, 100)}...
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Building className="w-4 h-4 mr-2" />
-                      Vendor ID: {solution.vendorId}
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="secondary">
-                        TRL {solution.trl || 'TBD'}
-                      </Badge>
-                      {solution.natoCompatible && (
-                        <Badge variant="outline" className="text-blue-600 border-blue-600">
-                          NATO Compatible
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    <Button 
-                      size="sm" 
-                      className="w-full mt-4"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setLocation(`/solutions/${solution.id}`);
-                      }}
-                      data-testid={`button-view-solution-${solution.id}`}
-                    >
-                      View Details
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {filteredSolutions.map((solution) => {
+              const reviews = solutionReviews[solution.id] || [];
+              return (
+                <SolutionCard
+                  key={solution.id}
+                  solution={solution}
+                  reviews={reviews}
+                  showGovernmentFeatures={true}
+                />
+              );
+            })}
           </div>
         )}
       </main>

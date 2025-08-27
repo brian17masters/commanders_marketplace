@@ -481,7 +481,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const searchResults = await openaiService.commanderCapabilitySearch(requirement, solutions);
       console.log(`OpenAI returned ${searchResults.totalMatches} matches`);
       
-      res.json(searchResults);
+      // Fetch reviews for each matched solution
+      const searchResultsWithReviews = {
+        ...searchResults,
+        matches: await Promise.all(
+          searchResults.matches.map(async (match) => {
+            try {
+              const reviews = await storage.getSolutionReviews(match.id);
+              return { ...match, reviews };
+            } catch (error) {
+              console.error(`Error fetching reviews for solution ${match.id}:`, error);
+              return { ...match, reviews: [] };
+            }
+          })
+        )
+      };
+      
+      res.json(searchResultsWithReviews);
     } catch (error) {
       console.error("Error performing capability search:", error);
       res.status(500).json({ message: "Failed to perform capability search" });

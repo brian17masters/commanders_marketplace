@@ -86,7 +86,9 @@ export default function SolutionCard({
 
   return (
     <Card 
-      className="hover:shadow-lg transition-shadow cursor-pointer"
+      className={`hover:shadow-lg transition-shadow cursor-pointer ${
+        reviews.length > 0 ? 'ring-2 ring-yellow-200 bg-yellow-50/30' : ''
+      }`}
       data-testid={`card-solution-${solution.id}`}
     >
       <CardHeader>
@@ -103,11 +105,11 @@ export default function SolutionCard({
               <Badge variant={getStatusColor(solution.status)}>
                 {getStatusText(solution.status)}
               </Badge>
-              {isGovernmentUser && showGovernmentFeatures && reviews.length > 0 && (
+              {reviews.length > 0 && (
                 <div className="flex items-center space-x-1">
                   <Star className="w-4 h-4 text-yellow-500 fill-current" />
                   <span className="text-sm font-medium">{averageRating.toFixed(1)}</span>
-                  <span className="text-xs text-muted-foreground">({reviews.length})</span>
+                  <span className="text-xs text-muted-foreground">({reviews.length} review{reviews.length !== 1 ? 's' : ''})</span>
                 </div>
               )}
             </div>

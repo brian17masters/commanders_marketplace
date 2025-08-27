@@ -252,6 +252,22 @@ export default function Landing() {
                       {match.description}
                     </p>
                     
+                    {/* Show reviews if available */}
+                    {match.reviews && match.reviews.length > 0 && (
+                      <div className="flex items-center space-x-2 mb-3 p-2 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                        <span className="text-sm font-medium">
+                          {(match.reviews.reduce((sum: number, review: any) => sum + review.rating, 0) / match.reviews.length).toFixed(1)}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          ({match.reviews.length} government review{match.reviews.length !== 1 ? 's' : ''})
+                        </span>
+                        <Badge variant="outline" className="text-xs text-green-600 border-green-600">
+                          Reviewed
+                        </Badge>
+                      </div>
+                    )}
+                    
                     <div className="space-y-3">
                       <div className="bg-muted/50 p-3 rounded-lg">
                         <h4 className="text-sm font-medium mb-2">Why this matches:</h4>
