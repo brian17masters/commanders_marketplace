@@ -26,8 +26,8 @@ export default function Header() {
           {/* Logo Section */}
           <div className="flex items-center space-x-4">
             <img 
-              src="https://images.unsplash.com/photo-1589578228447-e1a4e481c6c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=64&h=64" 
-              alt="U.S. Army Crest" 
+              src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=64&h=64" 
+              alt="AI Neural Network" 
               className="w-12 h-12 rounded-full border-2 border-accent" 
             />
             <div>

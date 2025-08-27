@@ -12,13 +12,13 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-4 mb-6">
               <img 
-                src="https://images.unsplash.com/photo-1589578228447-e1a4e481c6c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=64&h=64" 
-                alt="U.S. Army Crest" 
+                src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=64&h=64" 
+                alt="AI Neural Network" 
                 className="w-16 h-16 rounded-full border-2 border-accent" 
               />
               <img 
-                src="https://images.unsplash.com/photo-1589578228447-e1a4e481c6c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=64&h=64" 
-                alt="NATO Logo" 
+                src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=64&h=64" 
+                alt="Edge Computing" 
                 className="w-16 h-16 rounded border-2 border-accent" 
               />
             </div>
