@@ -78,7 +78,23 @@ export default function Landing() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <AuthButtons variant="landing" />
+                <Button 
+                  size="lg" 
+                  className="bg-accent text-primary font-medium hover:bg-yellow-500 transition-colors"
+                  onClick={() => window.location.href = "/vendor-portal"}
+                  data-testid="button-get-started"
+                >
+                  Get Started
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-accent text-accent hover:bg-accent hover:text-primary"
+                  onClick={() => window.location.href = "/challenges"}
+                  data-testid="button-browse-challenges"
+                >
+                  Browse Challenges
+                </Button>
               </div>
             </div>
             
