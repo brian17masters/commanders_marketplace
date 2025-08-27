@@ -72,7 +72,7 @@ export default function GovernmentPortal() {
   }, [isAuthenticated, isLoading, toast]);
 
   const { data: solutions, isLoading: solutionsLoading } = useQuery<Solution[]>({
-    queryKey: ["/api/solutions", { search: searchQuery, ...filters }],
+    queryKey: ["/api/solutions", searchQuery, filters.trl, filters.natoCompatible, filters.securityCleared],
     enabled: !!user?.id,
   });
 
