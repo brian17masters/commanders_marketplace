@@ -388,19 +388,49 @@ export default function VendorPortal() {
                       <FormField
                         control={form.control}
                         name="capabilityAreas"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Capability Areas</FormLabel>
-                            <FormControl>
-                              <Input 
-                                placeholder="e.g., AI/ML, Cybersecurity, Drones"
-                                onChange={(e) => field.onChange(e.target.value.split(',').map(s => s.trim()))}
-                                data-testid="input-capability-areas"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                        render={({ field }) => {
+                          const warfightingFunctions = [
+                            "Mission Command",
+                            "Movement and Maneuver", 
+                            "Intelligence",
+                            "Fires",
+                            "Sustainment",
+                            "Protection"
+                          ];
+                          
+                          return (
+                            <FormItem>
+                              <FormLabel>Warfighting Functions</FormLabel>
+                              <FormControl>
+                                <div className="space-y-2">
+                                  {warfightingFunctions.map((func) => (
+                                    <div key={func} className="flex items-center space-x-2">
+                                      <input
+                                        type="checkbox"
+                                        id={func}
+                                        checked={field.value?.includes(func) || false}
+                                        onChange={(e) => {
+                                          const currentValue = field.value || [];
+                                          if (e.target.checked) {
+                                            field.onChange([...currentValue, func]);
+                                          } else {
+                                            field.onChange(currentValue.filter((item: string) => item !== func));
+                                          }
+                                        }}
+                                        className="rounded border-gray-300"
+                                        data-testid={`checkbox-${func.toLowerCase().replace(/\s+/g, '-')}`}
+                                      />
+                                      <label htmlFor={func} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                        {func}
+                                      </label>
+                                    </div>
+                                  ))}
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
                       />
                     </div>
 
