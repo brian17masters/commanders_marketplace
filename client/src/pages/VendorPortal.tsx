@@ -35,29 +35,15 @@ export default function VendorPortal() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const [activeTab, setActiveTab] = useState("dashboard");
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
 
   const { data: solutions, isLoading: solutionsLoading } = useQuery({
-    queryKey: ["/api/solutions", { vendorId: user?.id }],
-    enabled: !!user?.id,
+    queryKey: ["/api/solutions"],
+    enabled: true,
   });
 
   const { data: applications, isLoading: applicationsLoading } = useQuery({
     queryKey: ["/api/applications"],
-    enabled: !!user?.id,
+    enabled: true,
   });
 
   const { data: challenges } = useQuery({
@@ -114,23 +100,6 @@ export default function VendorPortal() {
     createSolutionMutation.mutate(data);
   };
 
-  if (isLoading || !isAuthenticated) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
-
-  if (user?.role !== "vendor") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              Vendor access required. Please contact support to update your role.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">

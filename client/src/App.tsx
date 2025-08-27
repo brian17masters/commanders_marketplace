@@ -16,32 +16,18 @@ import SolutionDetails from "@/pages/SolutionDetails";
 import NotFound from "@/pages/not-found";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
-  }
-
   return (
     <Switch>
-      {isAuthenticated ? (
-        <>
-          <Route path="/" component={Home} />
-          <Route path="/challenges" component={Challenges} />
-          <Route path="/solutions" component={Solutions} />
-          <Route path="/vendor-portal" component={VendorPortal} />
-          <Route path="/government-portal" component={GovernmentPortal} />
-          <Route path="/contracting-portal" component={ContractingPortal} />
-          <Route path="/challenges/:id" component={ChallengeDetails} />
-          <Route path="/solutions/:id" component={SolutionDetails} />
-          <Route component={NotFound} />
-        </>
-      ) : (
-        <>
-          <Route path="/" component={Landing} />
-          <Route component={Landing} />
-        </>
-      )}
+      <Route path="/" component={Landing} />
+      <Route path="/home" component={Home} />
+      <Route path="/challenges" component={Challenges} />
+      <Route path="/solutions" component={Solutions} />
+      <Route path="/vendor-portal" component={VendorPortal} />
+      <Route path="/government-portal" component={GovernmentPortal} />
+      <Route path="/contracting-portal" component={ContractingPortal} />
+      <Route path="/challenges/:id" component={ChallengeDetails} />
+      <Route path="/solutions/:id" component={SolutionDetails} />
+      <Route component={NotFound} />
     </Switch>
   );
 }

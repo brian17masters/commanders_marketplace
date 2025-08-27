@@ -56,29 +56,15 @@ export default function GovernmentPortal() {
     securityCleared: "",
   });
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
 
   const { data: solutions, isLoading: solutionsLoading } = useQuery<Solution[]>({
     queryKey: ["/api/solutions", searchQuery, filters.trl, filters.natoCompatible, filters.securityCleared],
-    enabled: !!user?.id,
+    enabled: true,
   });
 
   const { data: stats } = useQuery<StatsData>({
     queryKey: ["/api/stats"],
-    enabled: !!user?.id,
+    enabled: true,
   });
 
   const { data: matchingResults, refetch: refetchMatching } = useQuery<MatchingResult>({
@@ -170,23 +156,6 @@ export default function GovernmentPortal() {
     }
   };
 
-  if (isLoading || !isAuthenticated) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
-
-  if (!user || !["government", "contracting_officer", "admin"].includes(user.role)) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              Government access required. Please contact support to update your role.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">

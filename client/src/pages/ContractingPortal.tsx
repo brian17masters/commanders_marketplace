@@ -39,53 +39,22 @@ export default function ContractingPortal() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const [activeTab, setActiveTab] = useState("dashboard");
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
 
   const { data: solutions } = useQuery<Solution[]>({
     queryKey: ["/api/solutions"],
-    enabled: !!user?.id,
+    enabled: true,
   });
 
   const { data: applications } = useQuery<Application[]>({
     queryKey: ["/api/applications"],
-    enabled: !!user?.id,
+    enabled: true,
   });
 
   const { data: stats } = useQuery<StatsData>({
     queryKey: ["/api/stats"],
-    enabled: !!user?.id,
+    enabled: true,
   });
 
-  if (isLoading || !isAuthenticated) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
-
-  if (!user || !["contracting_officer", "admin"].includes(user.role)) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              Contracting officer access required. Please contact support to update your role.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   const awardableSolutions = solutions?.filter((s: any) => s.status === "awardable") || [];
   const pendingApplications = applications?.filter((a: any) => a.status === "submitted") || [];
