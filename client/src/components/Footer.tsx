@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import aiImage from "@assets/image_1756255311944.png";
 
 export default function Footer() {
   const [, setLocation] = useLocation();
@@ -12,12 +13,12 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-4 mb-6">
               <img 
-                src="/attached_assets/image_1756255311944.png" 
+                src={aiImage} 
                 alt="AI Technology" 
                 className="w-16 h-16 rounded-full border-2 border-accent object-cover" 
               />
               <img 
-                src="/attached_assets/image_1756255311944.png" 
+                src={aiImage} 
                 alt="Digital Technology" 
                 className="w-16 h-16 rounded border-2 border-accent object-cover" 
               />
