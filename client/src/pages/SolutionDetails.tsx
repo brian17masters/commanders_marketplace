@@ -338,11 +338,11 @@ export default function SolutionDetails() {
             )}
 
             {/* Government Reviews */}
-            {isGovernmentUser && (
-              <Card>
-                <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <CardTitle>Government Reviews</CardTitle>
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle>Government Reviews</CardTitle>
+                  {isGovernmentUser && (
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button data-testid="button-submit-review">
@@ -457,8 +457,9 @@ export default function SolutionDetails() {
                         </Form>
                       </DialogContent>
                     </Dialog>
-                  </div>
-                </CardHeader>
+                  )}
+                </div>
+              </CardHeader>
                 <CardContent>
                   {reviewsLoading ? (
                     <p className="text-muted-foreground">Loading reviews...</p>
@@ -531,8 +532,7 @@ export default function SolutionDetails() {
                     <p className="text-muted-foreground">No reviews yet.</p>
                   )}
                 </CardContent>
-              </Card>
-            )}
+            </Card>
           </div>
 
           {/* Sidebar */}
