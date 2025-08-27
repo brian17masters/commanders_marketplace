@@ -463,6 +463,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Commander's Capability Search endpoint
+  app.post('/api/capability-search', async (req, res) => {
+    try {
+      const { requirement } = req.body;
+      
+      if (!requirement || requirement.trim().length === 0) {
+        return res.status(400).json({ message: "Requirement description is required" });
+      }
+
+      // Get all available solutions
+      const solutions = await storage.getSolutions();
+      
+      // Use OpenAI to analyze and match solutions
+      const searchResults = await openaiService.commanderCapabilitySearch(requirement, solutions);
+      
+      res.json(searchResults);
+    } catch (error) {
+      console.error("Error performing capability search:", error);
+      res.status(500).json({ message: "Failed to perform capability search" });
+    }
+  });
+
   // Stats endpoint for dashboard
   app.get('/api/stats', async (req, res) => {
     try {

@@ -20,6 +20,29 @@ export interface MatchingResponse {
   totalMatches: number;
 }
 
+export interface CapabilitySearchResponse {
+  matches: {
+    id: string;
+    title: string;
+    description: string;
+    matchPercentage: number;
+    relevanceExplanation: string;
+    capabilityAreas: string[];
+    trl: number;
+    natoCompatible: boolean;
+    securityCleared: boolean;
+  }[];
+  multiVendorScenario?: {
+    description: string;
+    recommendedCombinations: {
+      primarySolution: string;
+      supportingSolutions: string[];
+      explanation: string;
+    }[];
+  };
+  totalMatches: number;
+}
+
 export class OpenAIService {
   
   async chatAssistant(
@@ -172,6 +195,103 @@ export class OpenAIService {
         summary: "Unable to analyze feedback at this time",
         trends: [],
         recommendations: []
+      };
+    }
+  }
+
+  async commanderCapabilitySearch(
+    requirementDescription: string,
+    solutions: any[]
+  ): Promise<CapabilitySearchResponse> {
+    try {
+      const prompt = `
+        You are the Commander's Capability Search AI for the G-TEAD Marketplace, designed to help military commanders find the best technology solutions for their operational requirements.
+
+        MISSION: Analyze the commander's requirement and match it against available military technology solutions from the marketplace.
+
+        COMMANDER'S REQUIREMENT:
+        "${requirementDescription}"
+
+        AVAILABLE SOLUTIONS:
+        ${JSON.stringify(solutions.map(s => ({
+          id: s.id,
+          title: s.title,
+          description: s.description,
+          capabilityAreas: s.capabilityAreas,
+          trl: s.trl,
+          natoCompatible: s.natoCompatible,
+          securityCleared: s.securityCleared,
+          vendorId: s.vendorId
+        })))}
+
+        ANALYSIS REQUIREMENTS:
+        1. Match each relevant solution against the commander's requirement
+        2. Provide match percentage (0-100%) based on how well the solution addresses the requirement
+        3. Explain WHY each solution is relevant and how it addresses the specific need
+        4. Consider if multiple vendors/solutions might be needed together for a complete capability
+        5. Focus on operational effectiveness, interoperability, and mission success
+
+        ARMY WARFIGHTING FUNCTIONS TO CONSIDER:
+        - Mission Command: Command, control, communications, computers, intelligence, surveillance, reconnaissance
+        - Movement and Maneuver: Deployment, mobility, countermobility, survivability
+        - Intelligence: Collection, processing, analysis, dissemination of intelligence
+        - Fires: Use of weapon systems to create lethal and nonlethal effects
+        - Sustainment: Logistics, personnel services, health service support
+        - Protection: Preservation of the force from threats and hazards
+
+        Return results in JSON format with:
+        {
+          "matches": [
+            {
+              "id": "solution_id",
+              "title": "solution_title", 
+              "description": "solution_description",
+              "matchPercentage": 85,
+              "relevanceExplanation": "Detailed explanation of how this solution addresses the commander's requirement",
+              "capabilityAreas": ["relevant", "warfighting", "functions"],
+              "trl": 7,
+              "natoCompatible": true,
+              "securityCleared": false
+            }
+          ],
+          "multiVendorScenario": {
+            "description": "Explanation of why multiple solutions might be needed",
+            "recommendedCombinations": [
+              {
+                "primarySolution": "primary_solution_id",
+                "supportingSolutions": ["supporting_solution_id1", "supporting_solution_id2"],
+                "explanation": "How these solutions work together for complete capability"
+              }
+            ]
+          },
+          "totalMatches": number
+        }
+
+        ONLY include solutions with match percentage >= 30%. Prioritize solutions with higher TRL (Technology Readiness Level) and those that are NATO compatible when relevant.
+      `;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" },
+        max_completion_tokens: 2000,
+      });
+
+      const result = JSON.parse(response.choices[0].message.content || "{}");
+      
+      // Sort matches by match percentage descending
+      const sortedMatches = (result.matches || []).sort((a: any, b: any) => b.matchPercentage - a.matchPercentage);
+      
+      return {
+        matches: sortedMatches,
+        multiVendorScenario: result.multiVendorScenario,
+        totalMatches: sortedMatches.length
+      };
+    } catch (error) {
+      console.error("OpenAI Commander Capability Search error:", error);
+      return {
+        matches: [],
+        totalMatches: 0
       };
     }
   }

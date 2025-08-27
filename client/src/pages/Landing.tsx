@@ -2,13 +2,17 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AIChat from "@/components/AIChat";
 import { AuthButtons } from "@/components/AuthButtons";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Shield, 
   Zap, 
@@ -18,12 +22,43 @@ import {
   Star,
   CheckCircle,
   MessageCircle,
-  TrendingUp
+  TrendingUp,
+  Target,
+  Layers,
+  Loader2
 } from "lucide-react";
+
+interface CapabilityMatch {
+  id: string;
+  title: string;
+  description: string;
+  matchPercentage: number;
+  relevanceExplanation: string;
+  capabilityAreas: string[];
+  trl: number;
+  natoCompatible: boolean;
+  securityCleared: boolean;
+}
+
+interface CapabilitySearchResult {
+  matches: CapabilityMatch[];
+  multiVendorScenario?: {
+    description: string;
+    recommendedCombinations: {
+      primarySolution: string;
+      supportingSolutions: string[];
+      explanation: string;
+    }[];
+  };
+  totalMatches: number;
+}
 
 export default function Landing() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [, setLocation] = useLocation();
+  const [requirement, setRequirement] = useState("");
+  const [searchResults, setSearchResults] = useState<CapabilitySearchResult | null>(null);
+  const { toast } = useToast();
   
   const { data: stats } = useQuery({
     queryKey: ["/api/stats"],
@@ -33,97 +68,259 @@ export default function Landing() {
     queryKey: ["/api/challenges"],
   });
 
+  const capabilitySearchMutation = useMutation({
+    mutationFn: async (requirement: string) => {
+      const response = await apiRequest("POST", "/api/capability-search", { requirement });
+      return response.json();
+    },
+    onSuccess: (data: CapabilitySearchResult) => {
+      setSearchResults(data);
+      toast({
+        title: "Search Complete",
+        description: `Found ${data.totalMatches} matching solutions`,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Search Failed",
+        description: "Unable to perform capability search. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleCapabilitySearch = () => {
+    if (!requirement.trim()) {
+      toast({
+        title: "Requirement Required",
+        description: "Please describe your operational requirement or capability need.",
+        variant: "destructive",
+      });
+      return;
+    }
+    capabilitySearchMutation.mutate(requirement);
+  };
+
+  const exampleRequirements = [
+    "Real-time battlefield situational awareness for urban operations",
+    "Autonomous supply convoy protection in contested environments",
+    "Multi-domain intelligence fusion for strategic planning",
+    "Rapid deployment air defense against drone swarms"
+  ];
+
   const featuredChallenges = Array.isArray(challenges) ? challenges.slice(0, 2) : [];
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Hero Section */}
+      {/* Commander's Capability Search Hero */}
       <section className="hero-gradient text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <img 
-                  src="https://images.unsplash.com/photo-1589578228447-e1a4e481c6c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=32&h=32" 
-                  alt="NATO Logo" 
-                  className="w-8 h-8 rounded" 
-                />
-                <span className="army-gold-text font-medium">NATO Partnership Initiative</span>
-              </div>
-              <h1 className="text-4xl lg:text-6xl font-bold mb-6">
-                Accelerating Military Innovation Through{" "}
-                <span className="army-gold-text">Global Collaboration</span>
-              </h1>
-              <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                The Army's premier digital marketplace for sourcing, evaluating, and procuring innovative technologies from U.S., NATO, and foreign vendors. Streamlined procurement meets cutting-edge technology.
-              </p>
-              
-              <div className="grid sm:grid-cols-2 gap-4 mb-8">
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-6 h-6 text-accent" />
-                  <span>Rapid Technology Sourcing</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Zap className="w-6 h-6 text-accent" />
-                  <span>AI-Powered Matching</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Shield className="w-6 h-6 text-accent" />
-                  <span>Secure Compliance Framework</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Users className="w-6 h-6 text-accent" />
-                  <span>Multi-Role Access Portal</span>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  size="lg" 
-                  className="bg-accent text-primary font-medium hover:bg-yellow-500 transition-colors"
-                  onClick={() => window.location.href = "/vendor-portal"}
-                  data-testid="button-get-started"
-                >
-                  Get Started
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-accent text-accent hover:bg-accent hover:text-primary"
-                  onClick={() => window.location.href = "/challenges"}
-                  data-testid="button-browse-challenges"
-                >
-                  Browse Challenges
-                </Button>
-              </div>
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center space-x-2 mb-6">
+              <Target className="w-10 h-10 text-accent" />
+              <span className="army-gold-text font-bold text-2xl">Commander's Capability Search</span>
             </div>
-            
-            {/* Hero Image */}
-            <div className="relative">
-              <img 
-                src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-                alt="Advanced military technology and innovation" 
-                className="rounded-xl shadow-2xl w-full h-auto" 
-              />
-              <div className="absolute -bottom-6 -right-6 bg-card rounded-lg p-4 shadow-xl">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center">
-                    <Zap className="w-6 h-6 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground" data-testid="text-active-solutions">
-                      {(stats as any)?.solutions || 1247}+ Active Solutions
-                    </p>
-                    <p className="text-xs text-muted-foreground">Across 50+ Technology Areas</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <h1 className="text-4xl lg:text-6xl font-bold mb-6">
+              Describe Your <span className="army-gold-text">Operational Need</span><br />
+              Find the <span className="army-gold-text">Right Solutions</span>
+            </h1>
+            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+              AI-powered capability matching across {(stats as any)?.solutions || 46} military technology solutions. 
+              Describe your requirement and discover technologies that meet your mission needs.
+            </p>
           </div>
+
+          {/* Search Interface */}
+          <Card className="max-w-4xl mx-auto bg-card/95 backdrop-blur-sm border-accent/20">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2 text-foreground">
+                <Search className="w-5 h-5" />
+                <span>Operational Requirement Search</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <Textarea
+                  placeholder="Describe your operational requirement, capability gap, or mission need. Be specific about the environment, constraints, and desired outcomes..."
+                  value={requirement}
+                  onChange={(e) => setRequirement(e.target.value)}
+                  className="min-h-[120px] text-base"
+                  data-testid="textarea-requirement"
+                />
+                
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button 
+                    onClick={handleCapabilitySearch}
+                    disabled={capabilitySearchMutation.isPending}
+                    className="bg-accent text-primary hover:bg-yellow-500 flex-1"
+                    data-testid="button-search-capabilities"
+                  >
+                    {capabilitySearchMutation.isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Analyzing...
+                      </>
+                    ) : (
+                      <>
+                        <Search className="w-4 h-4 mr-2" />
+                        Search Capabilities
+                      </>
+                    )}
+                  </Button>
+                  
+                  <div className="flex space-x-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setLocation("/government")}
+                      data-testid="button-government-portal"
+                    >
+                      Government Portal
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setLocation("/vendor")}
+                      data-testid="button-vendor-portal"
+                    >
+                      Vendor Portal
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Example Requirements */}
+              <div className="space-y-3">
+                <p className="text-sm font-medium text-muted-foreground">Example Requirements:</p>
+                <div className="grid md:grid-cols-2 gap-2">
+                  {exampleRequirements.map((example, index) => (
+                    <Button
+                      key={index}
+                      variant="ghost"
+                      size="sm"
+                      className="text-left justify-start h-auto p-3 text-muted-foreground hover:text-foreground"
+                      onClick={() => setRequirement(example)}
+                      data-testid={`button-example-${index}`}
+                    >
+                      <span className="text-xs">"{example}"</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
+
+      {/* Search Results Section */}
+      {searchResults && (
+        <section className="py-16 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-foreground mb-4">
+                Capability Search Results
+              </h2>
+              <p className="text-muted-foreground text-lg">
+                Found {searchResults.totalMatches} solutions matching your requirements
+              </p>
+            </div>
+
+            {/* Solution Matches */}
+            <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
+              {searchResults.matches.map((match) => (
+                <Card key={match.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex justify-between items-start mb-2">
+                      <CardTitle className="text-lg leading-tight">{match.title}</CardTitle>
+                      <div className="flex flex-col items-end space-y-1">
+                        <Badge variant="default" className="text-xs">
+                          {match.matchPercentage}% Match
+                        </Badge>
+                        <Progress value={match.matchPercentage} className="w-16 h-2" />
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {match.capabilityAreas.map((area) => (
+                        <Badge key={area} variant="outline" className="text-xs">
+                          {area}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                      {match.description}
+                    </p>
+                    
+                    <div className="space-y-3">
+                      <div className="bg-muted/50 p-3 rounded-lg">
+                        <h4 className="text-sm font-medium mb-2">Why this matches:</h4>
+                        <p className="text-xs text-muted-foreground">{match.relevanceExplanation}</p>
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div className="text-center p-2 bg-muted/30 rounded">
+                          <div className="font-medium">TRL {match.trl}</div>
+                          <div className="text-muted-foreground">Readiness</div>
+                        </div>
+                        <div className="text-center p-2 bg-muted/30 rounded">
+                          <div className="font-medium">{match.natoCompatible ? "Yes" : "No"}</div>
+                          <div className="text-muted-foreground">NATO</div>
+                        </div>
+                        <div className="text-center p-2 bg-muted/30 rounded">
+                          <div className="font-medium">{match.securityCleared ? "Yes" : "No"}</div>
+                          <div className="text-muted-foreground">Cleared</div>
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => setLocation(`/solutions/${match.id}`)}
+                        data-testid={`button-view-solution-${match.id}`}
+                      >
+                        View Solution Details
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Multi-Vendor Scenario */}
+            {searchResults.multiVendorScenario && (
+              <Card className="bg-accent/10 border-accent/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Layers className="w-5 h-5 text-accent" />
+                    <span>Multi-Vendor Solution Recommendation</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-6">
+                    {searchResults.multiVendorScenario.description}
+                  </p>
+                  
+                  <div className="space-y-4">
+                    {searchResults.multiVendorScenario.recommendedCombinations.map((combo, index) => (
+                      <div key={index} className="border border-accent/20 rounded-lg p-4">
+                        <h4 className="font-medium mb-2">Recommended Combination {index + 1}</h4>
+                        <p className="text-sm text-muted-foreground mb-3">{combo.explanation}</p>
+                        <div className="flex flex-wrap gap-2">
+                          <Badge variant="default">Primary: {combo.primarySolution}</Badge>
+                          {combo.supportingSolutions.map((support) => (
+                            <Badge key={support} variant="outline">Supporting: {support}</Badge>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Stats Section */}
       <section className="py-16 bg-secondary">
