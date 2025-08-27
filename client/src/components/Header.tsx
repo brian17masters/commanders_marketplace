@@ -26,8 +26,8 @@ export default function Header() {
           {/* Logo Section */}
           <div className="flex items-center space-x-4">
             <img 
-              src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=64&h=64" 
-              alt="AI Neural Network" 
+              src="https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=64&h=64" 
+              alt="AI Technology" 
               className="w-12 h-12 rounded-full border-2 border-accent" 
             />
             <div>
