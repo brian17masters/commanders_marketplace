@@ -54,11 +54,24 @@ export default function GovernmentPortal() {
     trl: "",
     natoCompatible: "",
     securityCleared: "",
+    capabilityArea: "",
   });
 
 
   const { data: solutions, isLoading: solutionsLoading } = useQuery<Solution[]>({
-    queryKey: ["/api/solutions", searchQuery, filters.trl, filters.natoCompatible, filters.securityCleared],
+    queryKey: ["/api/solutions", searchQuery, filters.trl, filters.natoCompatible, filters.securityCleared, filters.capabilityArea],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (searchQuery) params.append('search', searchQuery);
+      if (filters.trl && filters.trl !== 'all') params.append('trl', filters.trl);
+      if (filters.natoCompatible && filters.natoCompatible !== 'all') params.append('natoCompatible', filters.natoCompatible);
+      if (filters.securityCleared && filters.securityCleared !== 'all') params.append('securityCleared', filters.securityCleared);
+      if (filters.capabilityArea && filters.capabilityArea !== 'all') params.append('capabilityArea', filters.capabilityArea);
+      
+      const response = await fetch(`/api/solutions?${params.toString()}`);
+      if (!response.ok) throw new Error('Failed to fetch solutions');
+      return response.json();
+    },
     enabled: true,
   });
 
@@ -209,31 +222,69 @@ export default function GovernmentPortal() {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    onClick={() => setSearchQuery("autonomous vehicle systems")}
+                    onClick={() => setSearchQuery("AI command systems")}
+                    data-testid="button-search-ai"
+                  >
+                    AI Command Systems
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setSearchQuery("autonomous ground vehicles")}
                     data-testid="button-search-autonomous"
                   >
-                    Autonomous vehicle systems
+                    Autonomous Ground Vehicles
                   </Button>
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    onClick={() => setSearchQuery("drone defense technologies")}
+                    onClick={() => setSearchQuery("reconnaissance drone")}
                     data-testid="button-search-drones"
                   >
-                    Drone defense technologies
+                    Reconnaissance Drones
                   </Button>
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    onClick={() => setSearchQuery("cybersecurity for IoT devices")}
+                    onClick={() => setSearchQuery("missile defense")}
+                    data-testid="button-search-missile"
+                  >
+                    Missile Defense Systems
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setSearchQuery("supply convoy")}
+                    data-testid="button-search-supply"
+                  >
+                    Supply Chain Solutions
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setSearchQuery("cybersecurity")}
                     data-testid="button-search-cyber"
                   >
-                    Cybersecurity for IoT devices
+                    Cybersecurity Systems
                   </Button>
                 </div>
 
                 {/* Filters */}
-                <div className="grid md:grid-cols-3 gap-4">
+                <div className="grid md:grid-cols-4 gap-4">
+                  <Select value={filters.capabilityArea} onValueChange={(value) => setFilters({ ...filters, capabilityArea: value })}>
+                    <SelectTrigger data-testid="select-filter-capability">
+                      <SelectValue placeholder="Army Warfighting Function" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Functions</SelectItem>
+                      <SelectItem value="Mission Command">Mission Command</SelectItem>
+                      <SelectItem value="Movement and Maneuver">Movement and Maneuver</SelectItem>
+                      <SelectItem value="Intelligence">Intelligence</SelectItem>
+                      <SelectItem value="Fires">Fires</SelectItem>
+                      <SelectItem value="Sustainment">Sustainment</SelectItem>
+                      <SelectItem value="Protection">Protection</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Select value={filters.trl} onValueChange={(value) => setFilters({ ...filters, trl: value })}>
                     <SelectTrigger data-testid="select-filter-trl">
                       <SelectValue placeholder="Technology Readiness Level" />

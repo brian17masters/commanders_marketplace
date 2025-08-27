@@ -36,8 +36,22 @@ export default function VendorPortal() {
   const [activeTab, setActiveTab] = useState("dashboard");
 
 
+  const [solutionFilters, setSolutionFilters] = useState({
+    status: "all",
+    capabilityArea: "all",
+  });
+
   const { data: solutions, isLoading: solutionsLoading } = useQuery({
-    queryKey: ["/api/solutions"],
+    queryKey: ["/api/solutions", solutionFilters.status, solutionFilters.capabilityArea],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (solutionFilters.status !== 'all') params.append('status', solutionFilters.status);
+      if (solutionFilters.capabilityArea !== 'all') params.append('capabilityArea', solutionFilters.capabilityArea);
+      
+      const response = await fetch(`/api/solutions?${params.toString()}`);
+      if (!response.ok) throw new Error('Failed to fetch solutions');
+      return response.json();
+    },
     enabled: true,
   });
 
@@ -187,6 +201,44 @@ export default function VendorPortal() {
                 Add Solution
               </Button>
             </div>
+
+            {/* Solution Filters */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Filter Solutions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Select value={solutionFilters.status} onValueChange={(value) => setSolutionFilters({ ...solutionFilters, status: value })}>
+                    <SelectTrigger data-testid="select-filter-status">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="awardable">Awardable</SelectItem>
+                      <SelectItem value="under_review">Under Review</SelectItem>
+                      <SelectItem value="submitted">Submitted</SelectItem>
+                      <SelectItem value="rejected">Rejected</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={solutionFilters.capabilityArea} onValueChange={(value) => setSolutionFilters({ ...solutionFilters, capabilityArea: value })}>
+                    <SelectTrigger data-testid="select-filter-capability-vendor">
+                      <SelectValue placeholder="Army Warfighting Function" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Functions</SelectItem>
+                      <SelectItem value="Mission Command">Mission Command</SelectItem>
+                      <SelectItem value="Movement and Maneuver">Movement and Maneuver</SelectItem>
+                      <SelectItem value="Intelligence">Intelligence</SelectItem>
+                      <SelectItem value="Fires">Fires</SelectItem>
+                      <SelectItem value="Sustainment">Sustainment</SelectItem>
+                      <SelectItem value="Protection">Protection</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {solutions?.map((solution: any) => (

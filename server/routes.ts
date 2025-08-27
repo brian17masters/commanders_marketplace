@@ -96,7 +96,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Solution routes
   app.get('/api/solutions', async (req, res) => {
     try {
-      const { vendorId, status, trl, natoCompatible, search } = req.query;
+      const { vendorId, status, trl, natoCompatible, securityCleared, capabilityArea, search } = req.query;
       
       let solutions;
       if (search) {
@@ -106,7 +106,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           vendorId: vendorId as string,
           status: status as string,
           trl: trl ? parseInt(trl as string) : undefined,
-          natoCompatible: natoCompatible === 'true',
+          natoCompatible: natoCompatible === 'true' ? true : natoCompatible === 'false' ? false : undefined,
+          securityCleared: securityCleared === 'true' ? true : securityCleared === 'false' ? false : undefined,
+          capabilityArea: capabilityArea as string,
         });
       }
       

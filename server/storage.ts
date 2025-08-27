@@ -886,6 +886,8 @@ export class MemStorage implements IStorage {
     status?: string; 
     trl?: number;
     natoCompatible?: boolean;
+    securityCleared?: boolean;
+    capabilityArea?: string;
   }): Promise<Solution[]> {
     let solutionsList = Array.from(this.solutions.values());
     
@@ -900,6 +902,14 @@ export class MemStorage implements IStorage {
     }
     if (filters?.natoCompatible !== undefined) {
       solutionsList = solutionsList.filter(s => s.natoCompatible === filters.natoCompatible);
+    }
+    if (filters?.securityCleared !== undefined) {
+      solutionsList = solutionsList.filter(s => s.securityCleared === filters.securityCleared);
+    }
+    if (filters?.capabilityArea) {
+      solutionsList = solutionsList.filter(s => 
+        (s.capabilityAreas as string[])?.includes(filters.capabilityArea!)
+      );
     }
     
     return solutionsList;
@@ -931,7 +941,8 @@ export class MemStorage implements IStorage {
       solution.description.toLowerCase().includes(lowerQuery) ||
       (solution.capabilityAreas as string[])?.some(area => 
         area.toLowerCase().includes(lowerQuery)
-      )
+      ) ||
+      solution.vendorId.toLowerCase().includes(lowerQuery)
     );
   }
 
