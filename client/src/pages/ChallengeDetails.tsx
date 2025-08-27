@@ -33,20 +33,6 @@ export default function ChallengeDetails() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading, user } = useAuth();
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
 
   const { data: challenge, isLoading: challengeLoading } = useQuery({
     queryKey: ["/api/challenges", id],
@@ -55,7 +41,7 @@ export default function ChallengeDetails() {
 
   const { data: existingApplication } = useQuery({
     queryKey: ["/api/applications", { challengeId: id, vendorId: user?.id }],
-    enabled: !!user?.id && !!id,
+    enabled: !!id,
   });
 
   const form = useForm<z.infer<typeof applicationSchema>>({

@@ -48,10 +48,6 @@ export default function ChallengeCard({ challenge, userApplication }: ChallengeC
   };
 
   const handleApplyNow = () => {
-    if (!isAuthenticated) {
-      window.location.href = "/api/login";
-      return;
-    }
     setLocation(`/challenges/${challenge.id}`);
   };
 

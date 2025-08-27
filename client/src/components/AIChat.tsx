@@ -35,7 +35,7 @@ export default function AIChat({ isOpen, onClose }: AIChatProps) {
 
   const { data: chatHistory, isLoading: historyLoading } = useQuery<ChatMessageType[]>({
     queryKey: ["/api/chat/history"],
-    enabled: isAuthenticated && isOpen,
+    enabled: isOpen,
   });
 
   const sendMessageMutation = useMutation({
@@ -59,17 +59,6 @@ export default function AIChat({ isOpen, onClose }: AIChatProps) {
       setMessage("");
     },
     onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
       toast({
         title: "Error",
         description: "Failed to send message. Please try again.",
@@ -81,14 +70,6 @@ export default function AIChat({ isOpen, onClose }: AIChatProps) {
   const handleSendMessage = () => {
     if (!message.trim()) return;
     
-    if (!isAuthenticated) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to use the AI assistant.",
-        variant: "destructive",
-      });
-      return;
-    }
 
     // Add user message immediately
     const userMessage: ChatMessage = {

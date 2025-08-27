@@ -135,14 +135,6 @@ export default function FileUpload({
   };
 
   const handleClick = () => {
-    if (!isAuthenticated) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to upload files",
-        variant: "destructive",
-      });
-      return;
-    }
     fileInputRef.current?.click();
   };
 

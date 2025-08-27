@@ -48,20 +48,6 @@ export default function SolutionDetails() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading, user } = useAuth();
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
 
   const { data: solution, isLoading: solutionLoading } = useQuery({
     queryKey: ["/api/solutions", id],
@@ -70,7 +56,7 @@ export default function SolutionDetails() {
 
   const { data: reviews, isLoading: reviewsLoading } = useQuery({
     queryKey: ["/api/solutions", id, "reviews"],
-    enabled: !!id && !!user && ["government", "contracting_officer", "admin"].includes(user.role),
+    enabled: !!id,
   });
 
   const { data: vendor } = useQuery({
