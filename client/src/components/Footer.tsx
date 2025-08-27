@@ -12,14 +12,14 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-4 mb-6">
               <img 
-                src="https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=64&h=64" 
+                src="/attached_assets/image_1756255311944.png" 
                 alt="AI Technology" 
-                className="w-16 h-16 rounded-full border-2 border-accent" 
+                className="w-16 h-16 rounded-full border-2 border-accent object-cover" 
               />
               <img 
-                src="https://images.unsplash.com/photo-1518432031352-d6fc5c10da5a?ixlib=rb-4.0.3&auto=format&fit=crop&w=64&h=64" 
+                src="/attached_assets/image_1756255311944.png" 
                 alt="Digital Technology" 
-                className="w-16 h-16 rounded border-2 border-accent" 
+                className="w-16 h-16 rounded border-2 border-accent object-cover" 
               />
             </div>
             <h3 className="text-xl font-bold mb-4">G-TEAD Marketplace</h3>
