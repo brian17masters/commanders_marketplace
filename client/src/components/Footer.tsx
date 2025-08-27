@@ -92,6 +92,15 @@ export default function Footer() {
                 </button>
               </li>
               <li>
+                <button 
+                  className="text-gray-300 hover:text-accent transition-colors text-left"
+                  onClick={() => setLocation("/contracting-portal")}
+                  data-testid="footer-link-contracting"
+                >
+                  Contracting Portal
+                </button>
+              </li>
+              <li>
                 <Button 
                   variant="link" 
                   className="text-gray-300 hover:text-accent p-0 h-auto font-normal"

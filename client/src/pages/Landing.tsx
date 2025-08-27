@@ -485,7 +485,7 @@ export default function Landing() {
                 </ul>
                 <Button 
                   className="w-full"
-                  onClick={() => setLocation("/vendor")}
+                  onClick={() => setLocation("/vendor-portal")}
                   data-testid="button-vendor-portal-access"
                 >
                   Access Vendor Portal
@@ -523,7 +523,7 @@ export default function Landing() {
                 </ul>
                 <Button 
                   className="w-full"
-                  onClick={() => setLocation("/government")}
+                  onClick={() => setLocation("/government-portal")}
                   data-testid="button-government-portal-access"
                 >
                   Access Government Portal
@@ -561,7 +561,7 @@ export default function Landing() {
                 </ul>
                 <Button 
                   className="w-full"
-                  onClick={() => setLocation("/contracting")}
+                  onClick={() => setLocation("/contracting-portal")}
                   data-testid="button-contracting-portal-access"
                 >
                   Access Contracting Portal
