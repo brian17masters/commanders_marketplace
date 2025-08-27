@@ -70,6 +70,7 @@ export const solutions = pgTable("solutions", {
   capabilityAreas: jsonb("capability_areas"), // Array of capability areas
   pitchVideoUrl: varchar("pitch_video_url"),
   documentUrls: jsonb("document_urls"), // Array of document URLs
+  procurements: jsonb("procurements"), // Array of procurement info: {unit, contactName, contactEmail, contractValue, deploymentDate}
   status: varchar("status").notNull().default("submitted"), // submitted, under_review, awardable, rejected
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

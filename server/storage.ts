@@ -155,6 +155,7 @@ export class MemStorage implements IStorage {
     
     // Initialize solutions
     this.initializeSolutions();
+    this.initializeReviews();
   }
 
   private initializeSolutions() {
@@ -169,6 +170,22 @@ export class MemStorage implements IStorage {
         natoCompatible: true,
         securityCleared: true,
         capabilityAreas: ["Mission Command"],
+        procurements: [
+          {
+            unit: "1st Armored Division",
+            contactName: "COL Sarah Mitchell",
+            contactEmail: "sarah.mitchell@army.mil",
+            contractValue: "$2.4M",
+            deploymentDate: "2023-08-15"
+          },
+          {
+            unit: "173rd Airborne Brigade",
+            contactName: "LTC James Rodriguez",
+            contactEmail: "james.rodriguez@army.mil",
+            contractValue: "$1.8M",
+            deploymentDate: "2024-01-10"
+          }
+        ],
         status: "awardable",
         createdAt: new Date('2024-11-15'),
         updatedAt: new Date('2024-11-15')
@@ -182,6 +199,15 @@ export class MemStorage implements IStorage {
         natoCompatible: true,
         securityCleared: true,
         capabilityAreas: ["Mission Command"],
+        procurements: [
+          {
+            unit: "82nd Airborne Division",
+            contactName: "MAJ Lisa Thompson",
+            contactEmail: "lisa.thompson@army.mil",
+            contractValue: "$5.2M",
+            deploymentDate: "2024-03-20"
+          }
+        ],
         status: "under_review",
         createdAt: new Date('2024-11-20'),
         updatedAt: new Date('2024-11-20')
@@ -275,6 +301,22 @@ export class MemStorage implements IStorage {
         natoCompatible: true,
         securityCleared: true,
         capabilityAreas: ["Movement and Maneuver"],
+        procurements: [
+          {
+            unit: "3rd Infantry Division",
+            contactName: "COL Michael Davis",
+            contactEmail: "michael.davis@army.mil",
+            contractValue: "$12.5M",
+            deploymentDate: "2023-11-30"
+          },
+          {
+            unit: "10th Mountain Division",
+            contactName: "LTC Jennifer Parker",
+            contactEmail: "jennifer.parker@army.mil",
+            contractValue: "$8.7M",
+            deploymentDate: "2024-02-14"
+          }
+        ],
         status: "awardable",
         createdAt: new Date('2024-11-12'),
         updatedAt: new Date('2024-11-12')
@@ -773,6 +815,104 @@ export class MemStorage implements IStorage {
     // Add all solutions to storage
     solutions.forEach(solution => {
       this.solutions.set(solution.id, solution as Solution);
+    });
+  }
+
+  private initializeReviews() {
+    const reviews = [
+      // Reviews for AI-Powered Command Decision Support System (mc-001)
+      {
+        id: "review-001",
+        solutionId: "mc-001",
+        reviewerId: "gov-001",
+        rating: 4,
+        title: "Excellent Decision Support Capabilities",
+        description: "We deployed this system with the 1st Armored Division and saw immediate improvements in decision-making speed and accuracy. The AI recommendations proved highly valuable during training exercises, reducing tactical decision time by approximately 40%. Integration with existing command systems was seamless.",
+        readinessScore: 8,
+        interoperabilityScore: 9,
+        supportScore: 7,
+        fieldTested: true,
+        testDate: new Date('2023-09-15'),
+        helpfulVotes: 12,
+        totalVotes: 14,
+        createdAt: new Date('2023-10-01'),
+        updatedAt: new Date('2023-10-01')
+      },
+      {
+        id: "review-002",
+        solutionId: "mc-001",
+        reviewerId: "gov-002",
+        rating: 5,
+        title: "Game-Changing Technology for Brigade Operations",
+        description: "Outstanding performance during deployment with 173rd Airborne Brigade. The system's ability to process and correlate multiple intelligence streams in real-time is impressive. Our commanders report significantly enhanced situational awareness and more confident decision-making in complex scenarios.",
+        readinessScore: 9,
+        interoperabilityScore: 8,
+        supportScore: 9,
+        fieldTested: true,
+        testDate: new Date('2024-02-10'),
+        helpfulVotes: 18,
+        totalVotes: 20,
+        createdAt: new Date('2024-02-25'),
+        updatedAt: new Date('2024-02-25')
+      },
+      // Reviews for Secure Tactical Communications Network (mc-002)
+      {
+        id: "review-003",
+        solutionId: "mc-002",
+        reviewerId: "gov-003",
+        rating: 4,
+        title: "Reliable Communications in Contested Environment",
+        description: "Deployed with 82nd Airborne Division during joint exercises. The quantum-resistant encryption and mesh networking capabilities performed exceptionally well in simulated contested environments. Voice clarity and data transmission reliability exceeded expectations.",
+        readinessScore: 8,
+        interoperabilityScore: 7,
+        supportScore: 8,
+        fieldTested: true,
+        testDate: new Date('2024-04-15'),
+        helpfulVotes: 9,
+        totalVotes: 11,
+        createdAt: new Date('2024-04-20'),
+        updatedAt: new Date('2024-04-20')
+      },
+      // Reviews for Autonomous Ground Vehicle Squadron (mm-001)
+      {
+        id: "review-004",
+        solutionId: "mm-001",
+        reviewerId: "gov-004",
+        rating: 5,
+        title: "Revolutionary Autonomous Capabilities",
+        description: "The AGV squadron deployment with 3rd Infantry Division exceeded all expectations. Navigation in complex terrain, obstacle avoidance, and mission execution capabilities are truly impressive. Reduced personnel risk while maintaining operational effectiveness. Highly recommend for tactical support operations.",
+        readinessScore: 9,
+        interoperabilityScore: 8,
+        supportScore: 9,
+        fieldTested: true,
+        testDate: new Date('2024-01-20'),
+        helpfulVotes: 25,
+        totalVotes: 27,
+        createdAt: new Date('2024-02-05'),
+        updatedAt: new Date('2024-02-05')
+      },
+      {
+        id: "review-005",
+        solutionId: "mm-001",
+        reviewerId: "gov-005",
+        rating: 4,
+        title: "Solid Performance in Mountain Operations",
+        description: "Deployed with 10th Mountain Division for terrain testing. Vehicles performed well in challenging mountain conditions, though some software refinements needed for extreme weather operations. Overall excellent value and capability for tactical supply missions.",
+        readinessScore: 7,
+        interoperabilityScore: 8,
+        supportScore: 7,
+        fieldTested: true,
+        testDate: new Date('2024-03-10'),
+        helpfulVotes: 8,
+        totalVotes: 10,
+        createdAt: new Date('2024-03-25'),
+        updatedAt: new Date('2024-03-25')
+      }
+    ];
+
+    // Add all reviews to storage
+    reviews.forEach(review => {
+      this.reviews.set(review.id, review as Review);
     });
   }
 

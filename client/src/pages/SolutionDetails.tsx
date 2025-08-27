@@ -29,7 +29,11 @@ import {
   Download,
   MessageCircle,
   Award,
-  Building
+  Building,
+  User,
+  Mail,
+  DollarSign,
+  Calendar
 } from "lucide-react";
 
 const reviewSchema = z.object({
@@ -249,6 +253,50 @@ export default function SolutionDetails() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Previous Deployments */}
+            {solution.procurements && solution.procurements.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Previous Deployments</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {solution.procurements.map((procurement: any, index: number) => (
+                      <div key={index} className="p-4 bg-secondary/50 rounded-lg border">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold text-sm mb-2 text-primary">{procurement.unit}</h4>
+                            <div className="space-y-1 text-sm">
+                              <div className="flex items-center space-x-2">
+                                <User className="w-3 h-3 text-muted-foreground" />
+                                <span>{procurement.contactName}</span>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Mail className="w-3 h-3 text-muted-foreground" />
+                                <span className="text-muted-foreground">{procurement.contactEmail}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="space-y-1 text-sm">
+                            <div className="flex items-center space-x-2">
+                              <DollarSign className="w-3 h-3 text-muted-foreground" />
+                              <span className="font-medium">{procurement.contractValue}</span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Calendar className="w-3 h-3 text-muted-foreground" />
+                              <span className="text-muted-foreground">
+                                Deployed: {new Date(procurement.deploymentDate).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Media & Documents */}
             {(solution.pitchVideoUrl || solution.documentUrls) && (
