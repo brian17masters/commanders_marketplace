@@ -125,7 +125,7 @@ export default function Landing() {
               Find the <span className="army-gold-text">Right Solutions</span>
             </h1>
             <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-              AI-powered capability matching across {(stats as any)?.solutions || 46} military technology solutions. 
+              AI-powered capability matching across {(stats as any)?.solutions || 54} military technology solutions. 
               Describe your requirement and discover technologies that meet your mission needs.
             </p>
           </div>
