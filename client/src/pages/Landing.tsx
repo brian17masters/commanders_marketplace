@@ -148,43 +148,24 @@ export default function Landing() {
                   data-testid="textarea-requirement"
                 />
                 
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button 
-                    onClick={handleCapabilitySearch}
-                    disabled={capabilitySearchMutation.isPending}
-                    className="bg-accent text-primary hover:bg-yellow-500 flex-1"
-                    data-testid="button-search-capabilities"
-                  >
-                    {capabilitySearchMutation.isPending ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Analyzing...
-                      </>
-                    ) : (
-                      <>
-                        <Search className="w-4 h-4 mr-2" />
-                        Search Capabilities
-                      </>
-                    )}
-                  </Button>
-                  
-                  <div className="flex space-x-2">
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setLocation("/government-portal")}
-                      data-testid="button-government-portal"
-                    >
-                      Government Portal
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setLocation("/vendor-portal")}
-                      data-testid="button-vendor-portal"
-                    >
-                      Vendor Portal
-                    </Button>
-                  </div>
-                </div>
+                <Button 
+                  onClick={handleCapabilitySearch}
+                  disabled={capabilitySearchMutation.isPending}
+                  className="bg-accent text-primary hover:bg-yellow-500 w-full"
+                  data-testid="button-search-capabilities"
+                >
+                  {capabilitySearchMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <Search className="w-4 h-4 mr-2" />
+                      Search Capabilities
+                    </>
+                  )}
+                </Button>
               </div>
               
               {/* Example Requirements */}
