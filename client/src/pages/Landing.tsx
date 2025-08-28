@@ -121,7 +121,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h1 className="text-4xl lg:text-6xl font-bold mb-6">
-              Describe Your <span className="army-gold-text">Operational Need</span><br />
+              Describe Your <span className="holo-text">Operational Need</span><br />
               Find the <span className="army-gold-text">Right Solutions</span>
             </h1>
             <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
@@ -131,10 +131,10 @@ export default function Landing() {
           </div>
 
           {/* Search Interface */}
-          <Card className="max-w-4xl mx-auto bg-card/95 backdrop-blur-sm border-accent/20">
+          <Card className="max-w-4xl mx-auto tech-card backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2 text-foreground">
-                <Search className="w-5 h-5" />
+              <CardTitle className="flex items-center space-x-2 text-foreground neon-accent">
+                <Search className="w-5 h-5 text-primary" />
                 <span>Operational Requirement Search</span>
               </CardTitle>
             </CardHeader>
@@ -144,20 +144,20 @@ export default function Landing() {
                   placeholder="Describe your operational requirement, capability gap, or mission need. Be specific about the environment, constraints, and desired outcomes..."
                   value={requirement}
                   onChange={(e) => setRequirement(e.target.value)}
-                  className="min-h-[120px] text-base"
+                  className="min-h-[120px] text-base bg-input/50 border-primary/20 focus:border-primary/50 focus:ring-primary/30"
                   data-testid="textarea-requirement"
                 />
                 
                 <Button 
                   onClick={handleCapabilitySearch}
                   disabled={capabilitySearchMutation.isPending}
-                  className="bg-accent text-primary hover:bg-yellow-500 w-full"
+                  className="digital-button w-full text-primary-foreground font-semibold py-3"
                   data-testid="button-search-capabilities"
                 >
                   {capabilitySearchMutation.isPending ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Analyzing...
+                      Analyzing Requirements...
                     </>
                   ) : (
                     <>
@@ -177,7 +177,7 @@ export default function Landing() {
                       key={index}
                       variant="ghost"
                       size="sm"
-                      className="text-left justify-start h-auto p-3 text-muted-foreground hover:text-foreground"
+                      className="text-left justify-start h-auto p-3 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all duration-300"
                       onClick={() => setRequirement(example)}
                       data-testid={`button-example-${index}`}
                     >
