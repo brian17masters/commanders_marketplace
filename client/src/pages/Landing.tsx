@@ -128,10 +128,6 @@ export default function Landing() {
                 className="w-48 h-48 object-contain drop-shadow-2xl"
               />
             </div>
-            <div className="flex items-center justify-center space-x-2 mb-6">
-              <Target className="w-10 h-10 text-accent" />
-              <span className="army-gold-text font-bold text-2xl">Commander's Capability Search</span>
-            </div>
             <h1 className="text-4xl lg:text-6xl font-bold mb-6">
               Describe Your <span className="army-gold-text">Operational Need</span><br />
               Find the <span className="army-gold-text">Right Solutions</span>
