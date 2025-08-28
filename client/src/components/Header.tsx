@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { Menu, X } from "lucide-react";
 import { AuthButtons } from "@/components/AuthButtons";
-import aiImage from "@assets/image_1756255311944.png";
+import logoImage from "@assets/image_1756341515234.png";
 
 export default function Header() {
   const { isAuthenticated, user } = useAuth();
@@ -27,9 +27,9 @@ export default function Header() {
           {/* Logo Section */}
           <div className="flex items-center space-x-4">
             <img 
-              src={aiImage} 
-              alt="AI Technology" 
-              className="w-12 h-12 rounded-full border-2 border-accent object-cover" 
+              src={logoImage} 
+              alt="Commanders Marketplace Logo" 
+              className="w-12 h-12 object-contain" 
             />
             <div>
               <h1 
@@ -37,7 +37,7 @@ export default function Header() {
                 onClick={() => handleNavigation("/")}
                 data-testid="text-app-title"
               >
-                G-TEAD Marketplace
+                Commanders Marketplace
               </h1>
               <p className="text-sm text-gray-300">Army Technology Solutions</p>
             </div>

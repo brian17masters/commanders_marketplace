@@ -38,6 +38,7 @@ interface CapabilityMatch {
   trl: number;
   natoCompatible: boolean;
   securityCleared: boolean;
+  reviews?: any[];
 }
 
 interface CapabilitySearchResult {

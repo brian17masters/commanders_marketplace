@@ -1,8 +1,8 @@
-# G-TEAD Marketplace
+# Commanders Marketplace
 
 ## Overview
 
-The G-TEAD Marketplace is a full-stack web application designed as the Army's global digital environment for rapidly sourcing, evaluating, and procuring innovative technologies from U.S., NATO, and foreign vendors. The platform supports USAREUR-AF's mission by streamlining technology competitions, providing a compliant marketplace for "post-competitive" solutions, and offering role-specific portals for different user types including Vendors, Government Buyers, and Contracting Officers.
+The Commanders Marketplace is a full-stack web application designed as the Army's global digital environment for rapidly sourcing, evaluating, and procuring innovative technologies from U.S., NATO, and foreign vendors. The platform supports USAREUR-AF's mission by streamlining technology competitions, providing a compliant marketplace for "post-competitive" solutions, and offering role-specific portals for different user types including Vendors, Government Buyers, and Contracting Officers.
 
 The application implements a comprehensive marketplace with features including technology challenges (inspired by xTech competitions), solution submissions with pitch videos, Amazon-style government reviews, and AI-powered assistance for procurement guidance.
 

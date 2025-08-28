@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import aiImage from "@assets/image_1756255311944.png";
+import logoImage from "@assets/image_1756341515234.png";
 
 export default function Footer() {
   const [, setLocation] = useLocation();
@@ -13,17 +13,12 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-4 mb-6">
               <img 
-                src={aiImage} 
-                alt="AI Technology" 
-                className="w-16 h-16 rounded-full border-2 border-accent object-cover" 
-              />
-              <img 
-                src={aiImage} 
-                alt="Digital Technology" 
-                className="w-16 h-16 rounded border-2 border-accent object-cover" 
+                src={logoImage} 
+                alt="Commanders Marketplace Logo" 
+                className="w-20 h-20 object-contain" 
               />
             </div>
-            <h3 className="text-xl font-bold mb-4">G-TEAD Marketplace</h3>
+            <h3 className="text-xl font-bold mb-4">Commanders Marketplace</h3>
             <p className="text-gray-300 mb-6 leading-relaxed">
               The Army's premier digital environment for rapidly sourcing, evaluating, and procuring innovative technologies from U.S., NATO, and foreign vendors. Supporting USAREUR-AF's immediate needs while providing a scalable foundation for all Combatant Commands.
             </p>
