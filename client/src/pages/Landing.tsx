@@ -10,6 +10,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AIChat from "@/components/AIChat";
 import { AuthButtons } from "@/components/AuthButtons";
+import logoImage from "@assets/image_1756341515234.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -119,6 +120,14 @@ export default function Landing() {
       <section className="hero-gradient text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
+            {/* Main Logo */}
+            <div className="flex justify-center mb-8">
+              <img 
+                src={logoImage} 
+                alt="Commanders Marketplace" 
+                className="w-48 h-48 object-contain drop-shadow-2xl"
+              />
+            </div>
             <div className="flex items-center justify-center space-x-2 mb-6">
               <Target className="w-10 h-10 text-accent" />
               <span className="army-gold-text font-bold text-2xl">Commander's Capability Search</span>
