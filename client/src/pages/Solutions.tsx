@@ -50,20 +50,20 @@ export default function Solutions() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl font-bold text-foreground mb-4">
             Technology Solutions
           </h1>
-          <p className="text-lg text-gray-600 mb-6">
+          <p className="text-lg text-muted-foreground mb-6">
             Browse innovative solutions from vendors worldwide
           </p>
           
           <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
               placeholder="Search solutions..."
               value={searchTerm}
@@ -93,11 +93,11 @@ export default function Solutions() {
           </div>
         ) : filteredSolutions.length === 0 ? (
           <div className="text-center py-12">
-            <Lightbulb className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <Lightbulb className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">
               {searchTerm ? "No solutions found" : "No solutions available"}
             </h3>
-            <p className="text-gray-500">
+            <p className="text-muted-foreground">
               {searchTerm 
                 ? "Try adjusting your search criteria" 
                 : "Check back later for new technology solutions"}
@@ -110,7 +110,13 @@ export default function Solutions() {
               return (
                 <SolutionCard
                   key={solution.id}
-                  solution={solution}
+                  solution={{
+                    ...solution,
+                    trl: solution.trl ?? 1,
+                    natoCompatible: solution.natoCompatible ?? false,
+                    securityCleared: solution.securityCleared ?? false,
+                    createdAt: solution.createdAt?.toISOString() ?? new Date().toISOString()
+                  }}
                   reviews={reviews}
                   showGovernmentFeatures={true}
                 />
