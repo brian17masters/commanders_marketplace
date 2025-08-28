@@ -113,7 +113,7 @@ export default function Landing() {
   const featuredChallenges = Array.isArray(challenges) ? challenges.slice(0, 2) : [];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen circuit-board">
       <Header />
       
       {/* Commander's Capability Search Hero */}

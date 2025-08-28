@@ -277,6 +277,103 @@
     background-size: 20px 20px;
   }
 
+  /* Circuit board background pattern */
+  .circuit-board {
+    position: relative;
+    background: 
+      radial-gradient(circle at 20% 80%, hsl(164 76% 45% / 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, hsl(192 75% 55% / 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, hsl(144 76% 45% / 0.02) 0%, transparent 50%),
+      linear-gradient(135deg, 
+        var(--army-dark) 0%, 
+        hsl(216 30% 9%) 25%,
+        var(--army-surface) 50%, 
+        hsl(217 25% 11%) 75%,
+        var(--army-darker) 100%
+      );
+  }
+
+  .circuit-board::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      /* Main circuit lines */
+      linear-gradient(90deg, transparent 40px, hsl(164 76% 45% / 0.1) 41px, hsl(164 76% 45% / 0.1) 43px, transparent 44px),
+      linear-gradient(0deg, transparent 60px, hsl(164 76% 45% / 0.08) 61px, hsl(164 76% 45% / 0.08) 63px, transparent 64px),
+      /* Secondary circuit traces */
+      linear-gradient(45deg, transparent 79px, hsl(192 75% 55% / 0.06) 80px, hsl(192 75% 55% / 0.06) 81px, transparent 82px),
+      linear-gradient(-45deg, transparent 119px, hsl(144 76% 45% / 0.04) 120px, hsl(144 76% 45% / 0.04) 121px, transparent 122px);
+    background-size: 80px 80px, 120px 120px, 160px 160px, 200px 200px;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .circuit-board::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      /* Circuit board connection points */
+      radial-gradient(circle at 10% 20%, hsl(164 76% 45% / 0.15) 1px, transparent 1px),
+      radial-gradient(circle at 30% 40%, hsl(192 75% 55% / 0.12) 1.5px, transparent 1.5px),
+      radial-gradient(circle at 60% 70%, hsl(144 76% 45% / 0.1) 1px, transparent 1px),
+      radial-gradient(circle at 80% 30%, hsl(164 76% 45% / 0.08) 2px, transparent 2px),
+      radial-gradient(circle at 25% 80%, hsl(192 75% 55% / 0.1) 1px, transparent 1px),
+      radial-gradient(circle at 70% 15%, hsl(144 76% 45% / 0.12) 1.5px, transparent 1.5px),
+      radial-gradient(circle at 45% 55%, hsl(164 76% 45% / 0.08) 1px, transparent 1px),
+      radial-gradient(circle at 85% 85%, hsl(192 75% 55% / 0.06) 2px, transparent 2px);
+    background-size: 200px 150px, 180px 200px, 220px 180px, 160px 220px, 240px 160px, 200px 240px, 180px 200px, 160px 180px;
+    pointer-events: none;
+    animation: circuit-pulse 8s ease-in-out infinite;
+  }
+
+  @keyframes circuit-pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+  }
+
+  /* Floating circuit elements */
+  .circuit-nodes {
+    position: relative;
+  }
+
+  .circuit-nodes::before {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 15%;
+    width: 4px;
+    height: 4px;
+    background: hsl(164 76% 45% / 0.6);
+    border-radius: 50%;
+    box-shadow: 
+      0 0 8px hsl(164 76% 45% / 0.4),
+      40px 30px 0 hsl(192 75% 55% / 0.5),
+      80px -10px 0 hsl(144 76% 45% / 0.4),
+      120px 50px 0 hsl(164 76% 45% / 0.3),
+      -30px 70px 0 hsl(192 75% 55% / 0.4),
+      60px 90px 0 hsl(144 76% 45% / 0.5);
+    animation: node-glow 6s ease-in-out infinite;
+  }
+
+  @keyframes node-glow {
+    0%, 100% { 
+      opacity: 0.4;
+      transform: scale(1);
+    }
+    50% { 
+      opacity: 0.8;
+      transform: scale(1.2);
+    }
+  }
+
   /* Pulsing tech elements */
   @keyframes tech-pulse {
     0%, 100% { 

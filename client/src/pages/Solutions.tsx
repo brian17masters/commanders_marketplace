@@ -50,7 +50,7 @@ export default function Solutions() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen circuit-board circuit-nodes">
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -115,7 +115,8 @@ export default function Solutions() {
                     trl: solution.trl ?? 1,
                     natoCompatible: solution.natoCompatible ?? false,
                     securityCleared: solution.securityCleared ?? false,
-                    createdAt: solution.createdAt?.toISOString() ?? new Date().toISOString()
+                    createdAt: solution.createdAt ? (typeof solution.createdAt === 'string' ? solution.createdAt : solution.createdAt.toISOString()) : new Date().toISOString(),
+                    capabilityAreas: Array.isArray(solution.capabilityAreas) ? solution.capabilityAreas : []
                   }}
                   reviews={reviews}
                   showGovernmentFeatures={true}
