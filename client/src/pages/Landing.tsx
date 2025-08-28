@@ -120,14 +120,6 @@ export default function Landing() {
       <section className="hero-gradient text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            {/* Main Logo */}
-            <div className="flex justify-center mb-8">
-              <img 
-                src={logoImage} 
-                alt="Commanders Marketplace" 
-                className="w-48 h-48 object-contain drop-shadow-2xl"
-              />
-            </div>
             <h1 className="text-4xl lg:text-6xl font-bold mb-6">
               Describe Your <span className="army-gold-text">Operational Need</span><br />
               Find the <span className="army-gold-text">Right Solutions</span>
