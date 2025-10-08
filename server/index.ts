@@ -1,10 +1,15 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { initializeDatabase } from "./database";
+import { PostgresStorage } from "./PostgresStorage";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Initialize database connection
+initializeDatabase().catch(console.error);
 
 app.use((req, res, next) => {
   const start = Date.now();

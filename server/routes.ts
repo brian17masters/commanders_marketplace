@@ -1,7 +1,9 @@
 import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { PostgresStorage } from "./PostgresStorage";
+
+const storage = new PostgresStorage();
 import { setupAuth, isAuthenticated, createDefaultAdmin } from "./localAuth";
 import { openaiService } from "./openai";
 import {

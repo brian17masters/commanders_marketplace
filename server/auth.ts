@@ -6,7 +6,13 @@ import session from "express-session";
 import type { Express, RequestHandler } from "express";
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
-import { storage } from "./storage";
+import { PostgresStorage } from "./PostgresStorage";
+
+// Storage instance to be initialized in setupStorage
+export let storage: PostgresStorage;
+export function setupStorage(dbUrl: string) {
+  storage = new PostgresStorage(dbUrl);
+}
 
 // Check if required environment variables exist
 const hasReplitAuth = process.env.REPLIT_DOMAINS && process.env.REPL_ID;
@@ -28,11 +34,11 @@ const getOidcConfig = memoize(
   { maxAge: 3600 * 1000 }
 );
 
-export function getSession() {
+export function getSession(dbUrl: string) {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
   const pgStore = connectPg(session);
   const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
+    conString: dbUrl,
     createTableIfMissing: false,
     ttl: sessionTtl,
     tableName: "sessions",
@@ -84,12 +90,14 @@ async function upsertUser(claims: any) {
     firstName: claims["first_name"],
     lastName: claims["last_name"],
     profileImageUrl: claims["profile_image_url"],
+    password: "", // Provide a default or handle as needed
+    role: "user" // Provide a default or handle as needed
   });
 }
 
-export async function setupAuth(app: Express) {
+export async function setupAuth(app: Express, dbUrl: string) {
   app.set("trust proxy", 1);
-  app.use(getSession());
+  app.use(getSession(dbUrl));
   app.use(passport.initialize());
   app.use(passport.session());
 
